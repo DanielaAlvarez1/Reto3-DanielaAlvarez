@@ -44,7 +44,7 @@ def initCatalog():
             'hashtags':None,
             'sentiment': None}
 
-    cat['features'] = mp.newMap(10000,
+    cat['features'] = mp.newMap(17,
                                    maptype='PROBING',
                                    loadfactor=0.5)
     cat['hashtags'] = mp.newMap(10000,
@@ -59,24 +59,35 @@ def addCategories(cat, rep):
     mapa = cat["features"]
     num_cat = 8
     for llave in rep:
-        while num_cat > 0:
+        print(llave)
+        if num_cat > 0:
             mp.put(mapa, llave, om.newMap(omaptype='RBT',
                                       comparefunction=compareValue))
-            num_cat-=1
+        else:
+            break
+        num_cat-=1
+    print(cat["features"])
     
 def addRep(cat, rep):
     mapa = cat["features"]
+    num_cat = 8
     for llave in rep:
-        valor_cat = float(rep[llave])
-        a = mp.get(mapa, llave)
-        mapa_cat = me.getValue(a)
-        info = {"artist_id": rep["artist_id"], "track_id": rep["track_id"], "created_at": rep["created_at"]}
-        if om.contains(mapa_cat, valor_cat):
-            c = om.get(mapa_cat, valor_cat)
-            lista_valor = me.getValue(c)
-            lt.addLast(lista_valor, info)
+        if num_cat > 0:
+            valor_cat = float(rep[llave])
+            a = mp.get(mapa, llave)
+            mapa_cat = me.getValue(a)
+            info = {"artist_id": rep["artist_id"], "track_id": rep["track_id"], "created_at": rep["created_at"]}
+            if om.contains(mapa_cat, valor_cat):
+                c = om.get(mapa_cat, valor_cat)
+                lista_valor = me.getValue(c)
+                lt.addLast(lista_valor, info)
+            else:
+                lista_valor = lt.newList(datastructure='SINGLE_LINKED')
+                lt.addLast(lista_valor, info)
+                om.put(mapa_cat, valor_cat, lista_valor)
         else:
-            om.put(mapa_cat, valor_cat, info)
+            break
+        num_cat-=1
     return cat
 
 # Funciones para creacion de datos
