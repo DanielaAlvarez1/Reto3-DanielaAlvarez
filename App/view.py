@@ -26,7 +26,7 @@ import controller
 from DISClib.ADT import list as lt
 assert cf
 
-hashtag = "user_track_hashtag_timestamp-small.csv"
+hashtags = "user_track_hashtag_timestamp-small.csv"
 features = "context_content_features-small.csv"
 sentiment = "sentiment_values.csv"
 cat = None
@@ -58,9 +58,11 @@ while True:
     if int(inputs[0]) == 1:
         print("Cargando información de los archivos ....")
         cat = controller.initCatalog()
-        
+
     elif int(inputs[0]) == 2:
-        pass
+        print("\nCargando información ....")
+        controller.loadData(cat, hashtags, features, sentiment)
+
     elif int(inputs[0]) == 3:
         pass
     elif int(inputs[0]) == 4:

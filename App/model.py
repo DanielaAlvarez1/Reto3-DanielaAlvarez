@@ -40,23 +40,34 @@ los mismos.
 
 # Construccion de modelos
 def initCatalog():
-    """ Inicializa el analizador
+    cat = {'features': None,
+            'hashtags':None,
+            'sentiment': None}
 
-    Crea una lista vacia para guardar todos los crimenes
-    Se crean indices (Maps) por los siguientes criterios:
-    -Fechas
-
-    Retorna el analizador inicializado.
-    """
-    cat = {'reproducciones': None,
-                'genreindex': None
-                }
-
-    cat['reproducciones'] = lt.newList('SINGLE_LINKED', compareIds)
-    cat['genreindex'] = om.newMap(omaptype='RBT',
-                                      comparefunction=compareDates)
+    cat['features'] = mp.newMap(10000,
+                                   maptype='PROBING',
+                                   loadfactor=0.5)
+    addCategories(cat['features'])
+    cat['hashtags'] = mp.newMap(10000,
+                                   maptype='PROBING',
+                                   loadfactor=0.5)
+    cat['sentiment'] = mp.newMap(10000,
+                                   maptype='PROBING',
+                                   loadfactor=0.5)
     return cat
 # Funciones para agregar informacion al catalogo
+def addCategories(map):
+    mp.put(map, "instrumentalness", lt.newList(datastructure= 'SINGLE_LINKED'))
+    mp.put(map, "liveness", lt.newList(datastructure= 'SINGLE_LINKED'))
+    mp.put(map, "speechiness", lt.newList(datastructure= 'SINGLE_LINKED'))
+    mp.put(map, "danceability", lt.newList(datastructure= 'SINGLE_LINKED'))
+    mp.put(map, "valence", lt.newList(datastructure= 'SINGLE_LINKED'))
+    mp.put(map, "tempo", lt.newList(datastructure= 'SINGLE_LINKED'))
+    mp.put(map, "acousticness", lt.newList(datastructure= 'SINGLE_LINKED'))
+    mp.put(map, "energy", lt.newList(datastructure= 'SINGLE_LINKED'))
+
+def addRep(cat, rep):
+    pass
 
 # Funciones para creacion de datos
 

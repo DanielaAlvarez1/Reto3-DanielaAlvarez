@@ -34,7 +34,25 @@ def initCatalog():
     cat = model.initCatalog()
     return cat
 # Funciones para la carga de datos
+def loadData(cat, hashtags, features, sentiment):
+    loadFeatures(cat, features)
+    loadHashtags(cat, hashtags)
+    loadSentiment(cat, sentiment)
 
+def loadFeatures(cat, features):
+    ffile = cf.data_dir + "subsamples-small" + "\\" + features
+    print(ffile)
+    input_file = csv.DictReader(open(ffile, encoding="utf-8"),
+                                delimiter=",")
+    for rep in input_file:
+        #model.addRep(cat, rep)
+        print(str(rep))
+    return cat
+
+def loadHashtags(cat, hashtags):
+    pass
+def loadSentiment(cat, sentiment):
+    pass
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
