@@ -28,6 +28,7 @@
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
+from DISClib.ADT import orderedmap as om
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
 assert cf
@@ -38,7 +39,23 @@ los mismos.
 """
 
 # Construccion de modelos
+def initCatalog():
+    """ Inicializa el analizador
 
+    Crea una lista vacia para guardar todos los crimenes
+    Se crean indices (Maps) por los siguientes criterios:
+    -Fechas
+
+    Retorna el analizador inicializado.
+    """
+    cat = {'reproducciones': None,
+                'genreindex': None
+                }
+
+    cat['reproducciones'] = lt.newList('SINGLE_LINKED', compareIds)
+    cat['genreindex'] = om.newMap(omaptype='RBT',
+                                      comparefunction=compareDates)
+    return cat
 # Funciones para agregar informacion al catalogo
 
 # Funciones para creacion de datos
