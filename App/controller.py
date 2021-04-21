@@ -56,6 +56,14 @@ def loadHashtags(cat, hashtags):
     pass
 def loadSentiment(cat, sentiment):
     pass
+# Funciones para consulta de datos del map
+def repSize(arbol):
+    return model.repSize(arbol)
+
+def treeHeight(arbol):
+    return model.treeHeight(arbol)
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
+def caracterizarrep(cat, carac, minimo, maximo):
+    return model.caracterizarrep(cat, carac, minimo, maximo)

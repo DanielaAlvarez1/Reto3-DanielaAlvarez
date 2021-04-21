@@ -59,15 +59,13 @@ def addCategories(cat, rep):
     mapa = cat["features"]
     num_cat = 8
     for llave in rep:
-        print(llave)
         if num_cat > 0:
             mp.put(mapa, llave, om.newMap(omaptype='RBT',
                                       comparefunction=compareValue))
         else:
             break
         num_cat-=1
-    print(cat["features"])
-    
+
 def addRep(cat, rep):
     mapa = cat["features"]
     num_cat = 8
@@ -92,7 +90,37 @@ def addRep(cat, rep):
 
 # Funciones para creacion de datos
 
+# Funciones de consulta de datos del map
+def repSize(arbol):
+    return om.size(arbol)
+
+def treeHeight(arbol):
+    return om.height(arbol)
+
 # Funciones de consulta
+def caracterizarrep(cat, carac, minimo, maximo):
+    mapa = cat["features"]
+    a = mp.get(mapa, carac)
+    m_carac = me.getValue(a)
+    listareps = om.values(m_carac, minimo, maximo)
+    arbol_artistas = om.newMap(omaptype='RBT',
+                                      comparefunction=compareValue)
+    eventos_escucha = 0
+
+    for listas in lt.iterator(listareps):
+        tamaño = lt.size(listas)
+        eventos_escucha+=tamaño
+        for reps in lt.iterator(listas):
+            artista = reps["artist_id"]
+            if om.contains(arbol_artistas, artista):
+                c = om.get(arbol_artistas, artista)
+                lista_artista = me.getValue(c)
+            else:
+                lista_artista = lt.newList(datastructure="SINGLE_LINKED")
+            lt.addLast(lista_artista, reps)
+
+    artistas = om.size(arbol_artistas)
+    return (eventos_escucha, artistas, arbol_artistas)
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 def compareValue(val1, val2):
