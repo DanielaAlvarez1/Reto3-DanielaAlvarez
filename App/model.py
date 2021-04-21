@@ -47,7 +47,6 @@ def initCatalog():
     cat['features'] = mp.newMap(10000,
                                    maptype='PROBING',
                                    loadfactor=0.5)
-    addCategories(cat['features'])
     cat['hashtags'] = mp.newMap(10000,
                                    maptype='PROBING',
                                    loadfactor=0.5)
@@ -56,23 +55,43 @@ def initCatalog():
                                    loadfactor=0.5)
     return cat
 # Funciones para agregar informacion al catalogo
-def addCategories(map):
-    mp.put(map, "instrumentalness", lt.newList(datastructure= 'SINGLE_LINKED'))
-    mp.put(map, "liveness", lt.newList(datastructure= 'SINGLE_LINKED'))
-    mp.put(map, "speechiness", lt.newList(datastructure= 'SINGLE_LINKED'))
-    mp.put(map, "danceability", lt.newList(datastructure= 'SINGLE_LINKED'))
-    mp.put(map, "valence", lt.newList(datastructure= 'SINGLE_LINKED'))
-    mp.put(map, "tempo", lt.newList(datastructure= 'SINGLE_LINKED'))
-    mp.put(map, "acousticness", lt.newList(datastructure= 'SINGLE_LINKED'))
-    mp.put(map, "energy", lt.newList(datastructure= 'SINGLE_LINKED'))
-
+def addCategories(cat, rep):
+    mapa = cat["features"]
+    num_cat = 8
+    for llave in rep:
+        while num_cat > 0:
+            mp.put(mapa, llave, om.newMap(omaptype='RBT',
+                                      comparefunction=compareValue))
+            num_cat-=1
+    
 def addRep(cat, rep):
-    pass
+    mapa = cat["features"]
+    for llave in rep:
+        valor_cat = float(rep[llave])
+        a = mp.get(mapa, llave)
+        mapa_cat = me.getValue(a)
+        info = {"artist_id": rep["artist_id"], "track_id": rep["track_id"], "created_at": rep["created_at"]}
+        if om.contains(mapa_cat, valor_cat):
+            c = om.get(mapa_cat, valor_cat)
+            lista_valor = me.getValue(c)
+            lt.addLast(lista_valor, info)
+        else:
+            om.put(mapa_cat, valor_cat, info)
+    return cat
 
 # Funciones para creacion de datos
 
 # Funciones de consulta
 
 # Funciones utilizadas para comparar elementos dentro de una lista
-
+def compareValue(val1, val2):
+    """
+    Compara dos fechas
+    """
+    if (val1 == val2):
+        return 0
+    elif (val1 > val2):
+        return 1
+    else:
+        return -1
 # Funciones de ordenamiento

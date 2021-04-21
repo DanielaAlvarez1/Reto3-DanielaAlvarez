@@ -44,9 +44,12 @@ def loadFeatures(cat, features):
     print(ffile)
     input_file = csv.DictReader(open(ffile, encoding="utf-8"),
                                 delimiter=",")
+    a = True
     for rep in input_file:
-        #model.addRep(cat, rep)
-        print(str(rep))
+        while a:
+            model.addCategories(cat, rep)
+            a = False
+        add = model.addRep(cat, rep)
     return cat
 
 def loadHashtags(cat, hashtags):
