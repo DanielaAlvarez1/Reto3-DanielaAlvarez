@@ -41,7 +41,6 @@ def loadData(cat, hashtags, features, sentiment):
 
 def loadFeatures(cat, features):
     ffile = cf.data_dir + "subsamples-small" + "\\" + features
-    print(ffile)
     input_file = csv.DictReader(open(ffile, encoding="utf-8"),
                                 delimiter=",")
     a = True
@@ -53,7 +52,11 @@ def loadFeatures(cat, features):
     return cat
 
 def loadHashtags(cat, hashtags):
-    pass
+    hfile = cf.data_dir + "subsamples-small" + "\\" + hashtags
+    input_file = csv.DictReader(open(ffile, encoding="utf-8"),
+                                delimiter=",")
+    for rep in input_file:
+        model.addHashtag(cat, rep)
 def loadSentiment(cat, sentiment):
     pass
 # Funciones para consulta de datos del map

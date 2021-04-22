@@ -88,6 +88,9 @@ def addRep(cat, rep):
         num_cat-=1
     return cat
 
+def addHashtag(cat, rep):
+    mapa = cat["hashtags"]
+    fecha = 
 # Funciones para creacion de datos
 
 # Funciones de consulta de datos del map
@@ -115,9 +118,11 @@ def caracterizarrep(cat, carac, minimo, maximo):
             if om.contains(arbol_artistas, artista):
                 c = om.get(arbol_artistas, artista)
                 lista_artista = me.getValue(c)
+                lt.addLast(lista_artista, reps)
             else:
                 lista_artista = lt.newList(datastructure="SINGLE_LINKED")
-            lt.addLast(lista_artista, reps)
+                lt.addLast(lista_artista, reps)
+                om.put(arbol_artistas, artista, lista_artista)
 
     artistas = om.size(arbol_artistas)
     return (eventos_escucha, artistas, arbol_artistas)

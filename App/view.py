@@ -66,13 +66,13 @@ while True:
     elif int(inputs[0]) == 3:
         carac = input("Ingrese la característica de contenido que desea consultar: ").lower().replace(" ","")
         minimo = float(input("Ingrese el valor mínimo de característica: "))
-        máximo = float(input("Ingrese el valor máximo de característica: "))
+        maximo = float(input("Ingrese el valor máximo de característica: "))
         info = controller.caracterizarrep(cat, carac, minimo, maximo)
         print("\nTotal de Reproducciones: " + str(info[0]))
-        print("\nArtistas Únicos: " + str(info[1]))
+        print("Artistas Únicos: " + str(info[1]))
         print("\nPara resolver este requerimiento, se creó un RBT donde las llaves fueron los artistas\
-        y los valores fueron los eventos de escucha.")
-        print("\n La información de dicho arbol se presenta a continuación:")
+ y los valores fueron los eventos de escucha.")
+        print("\nLa información de dicho arbol se presenta a continuación:")
         print('Elementos cargados: ' + str(controller.repSize(info[2])))
         print('Altura del arbol: ' + str(controller.treeHeight(info[2])))
 
