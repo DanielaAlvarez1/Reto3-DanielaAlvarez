@@ -30,6 +30,7 @@ hashtags = "user_track_hashtag_timestamp-small.csv"
 features = "context_content_features-small.csv"
 sentiment = "sentiment_values.csv"
 cat = None
+
 """
 La vista se encarga de la interacción con el usuario
 Presenta el menu de opciones y por cada seleccion

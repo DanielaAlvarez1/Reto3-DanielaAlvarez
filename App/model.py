@@ -31,6 +31,7 @@ from DISClib.ADT import map as mp
 from DISClib.ADT import orderedmap as om
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
+import datetime
 assert cf
 
 """
@@ -47,12 +48,10 @@ def initCatalog():
     cat['features'] = mp.newMap(17,
                                    maptype='PROBING',
                                    loadfactor=0.5)
-    cat['hashtags'] = mp.newMap(10000,
-                                   maptype='PROBING',
-                                   loadfactor=0.5)
-    cat['sentiment'] = mp.newMap(10000,
-                                   maptype='PROBING',
-                                   loadfactor=0.5)
+    cat['hashtags'] = om.newMap(omaptype='RBT',
+                                    comparefunction=compareDates)
+    cat['sentiment'] = om.newMap(omaptype='RBT',
+                                      comparefunction=compareValue))
     return cat
 # Funciones para agregar informacion al catalogo
 def addCategories(cat, rep):
@@ -90,7 +89,17 @@ def addRep(cat, rep):
 
 def addHashtag(cat, rep):
     mapa = cat["hashtags"]
-    fecha = 
+    fecha = rep["created_at"]
+    date = datetime.datetime.strptime(fecha, '%Y-%m-%d %H:%M:%S')
+    del rep["created_at"]
+    om.put(mapa, date, rep)
+
+def addSentiment(cat, sent):
+    mapa = cat["sentiment"]
+    vader_avg = sent["vader_avg"]
+    hashtag = sent["hashtag"]
+    om.put(mapa, vader_avg, hashtag)
+
 # Funciones para creacion de datos
 
 # Funciones de consulta de datos del map
@@ -129,12 +138,17 @@ def caracterizarrep(cat, carac, minimo, maximo):
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 def compareValue(val1, val2):
-    """
-    Compara dos fechas
-    """
     if (val1 == val2):
         return 0
     elif (val1 > val2):
+        return 1
+    else:
+        return -1
+
+def compareDates(date1, date2):
+    if (date1 == date2):
+        return 0
+    elif (date1 > date2):
         return 1
     else:
         return -1
