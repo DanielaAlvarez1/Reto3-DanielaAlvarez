@@ -51,7 +51,7 @@ def initCatalog():
     cat['hashtags'] = om.newMap(omaptype='RBT',
                                     comparefunction=compareDates)
     cat['sentiment'] = om.newMap(omaptype='RBT',
-                                      comparefunction=compareValue))
+                                      comparefunction=compareValue)
     return cat
 # Funciones para agregar informacion al catalogo
 def addCategories(cat, rep):
