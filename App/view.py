@@ -92,7 +92,7 @@ while True:
         for tracks in lt.iterator(info[1]):
             track_id = tracks["track_id"]
             energy = tracks["energy"]
-            dance = track["danceability"]
+            dance = tracks["danceability"]
             print("Track {0}: {1} con energia de {2} y danceabilidad de {3}".format(num, track_id, energy, dance))
             num-=1
 
@@ -110,7 +110,7 @@ while True:
         for tracks in lt.iterator(info[1]):
             track_id = tracks["track_id"]
             instru = tracks["instrumentalness"]
-            tempo = track["tempo"]
+            tempo = tracks["tempo"]
             print("Track {0}: {1} con energia de {2} y danceabilidad de {3}".format(num, track_id, instru, tempo))
             num-=1
     elif int(inputs[0]) == 6:

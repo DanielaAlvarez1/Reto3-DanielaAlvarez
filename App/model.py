@@ -160,6 +160,10 @@ def musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo):
     a = mp.get(mapa, "instrumentalness")
     m_instru = me.getValue(a)
     lista_instru = om.values(m_instru, minInstru, maxInstru)
+    lista_i = lt.newList(datastructure="ARRAY_LIST", cmpfunction= compareTracksids)
+    for i in lt.iterator(lista_instru):
+        for rep in lt.iterator(i):
+            lt.addLast(lista_i, rep)
     b = mp.get(mapa, "tempo")
     m_tempo = me.getValue(b)
     lista_tempo = om.values(m_tempo, minTempo, maxTempo)
@@ -167,7 +171,7 @@ def musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo):
     for e in lt.iterator(lista_tempo):
         for rep in lt.iterator(e):
             lt.addLast(lista_t, rep)
-    return musica(lista_instru, lista_t)
+    return musica(lista_i, lista_t)
     
 def musica(lista1, lista2):
     arbol_pistas = om.newMap(omaptype='RBT',
@@ -181,9 +185,8 @@ def musica(lista1, lista2):
             om.put(arbol_pistas, track_id, reps)
             while n>0:
                 lt.addLast(lista_5_tracks, reps)
-                print(".")
                 n-= 1
-
+                
     numero_tracks = om.size(arbol_pistas)
     return (numero_tracks, lista_5_tracks)
 
