@@ -67,7 +67,7 @@ def addCategories(cat, rep):
 
 def addRep(cat, rep):
     mapa = cat["features"]
-    num_cat = 8
+    num_cat = 9
     for llave in rep:
         if num_cat > 0:
             valor_cat = float(rep[llave])
@@ -93,7 +93,6 @@ def addHashtag(cat, rep):
     mapa = cat["hashtags"]
     fecha = rep["created_at"]
     date = datetime.datetime.strptime(fecha, '%Y-%m-%d %H:%M:%S')
-    del rep["created_at"]
     om.put(mapa, date, rep)
 
 def addSentiment(cat, sent):
@@ -142,7 +141,9 @@ def musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability):
     mapa = cat["features"]
     a = mp.get(mapa, "energy")
     m_energy = me.getValue(a)
+    print(om.size(m_energy))
     lista_energy = om.values(m_energy, minEnergy, maxEnergy)
+    print(lt.size(lista_energy))
     b = mp.get(mapa, "danceability")
     m_danceability = me.getValue(b)
     lista_danceability = om.values(m_danceability, minDanceability, maxDanceability)
