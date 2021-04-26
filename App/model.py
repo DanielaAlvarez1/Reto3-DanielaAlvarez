@@ -142,14 +142,18 @@ def musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability):
     a = mp.get(mapa, "energy")
     m_energy = me.getValue(a)
     lista_energy = om.values(m_energy, minEnergy, maxEnergy)
+    lista_e = lt.newList(datastructure="ARRAY_LIST", cmpfunction= compareTracksids)
+    for i in lt.iterator(lista_energy):
+        for rep in lt.iterator(i):
+            lt.addLast(lista_e, rep)
     b = mp.get(mapa, "danceability")
     m_danceability = me.getValue(b)
     lista_danceability = om.values(m_danceability, minDanceability, maxDanceability)
-    lista_d = lt.newList(datastructure="ARRAY_LIST")
+    lista_d = lt.newList(datastructure="ARRAY_LIST", cmpfunction= compareTracksids)
     for e in lt.iterator(lista_danceability):
         for rep in lt.iterator(e):
             lt.addLast(lista_d, rep)
-    return musica(lista_energy, lista_d)
+    return musica(lista_e, lista_d)
 
 def musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo):
     mapa = cat["features"]
@@ -171,14 +175,14 @@ def musica(lista1, lista2):
     lista_5_tracks = lt.newList(datastructure="ARRAY_LIST")
 
     n = 5
-    for listas in lt.iterator(lista1):
-        for reps in lt.iterator(listas):
-            if lt.isPresent(lista2, reps) > 0:
-                track_id = reps["track_id"]
-                om.put(arbol_pistas, track_id, reps)
-                while n>0:
-                    lt.addLast(lista_5_tracks, reps)
-                    n-= 1
+    for reps in lt.iterator(lista1):
+        if lt.isPresent(lista2, reps) > 0:
+            track_id = reps["track_id"]
+            om.put(arbol_pistas, track_id, reps)
+            while n>0:
+                lt.addLast(lista_5_tracks, reps)
+                print(".")
+                n-= 1
 
     numero_tracks = om.size(arbol_pistas)
     return (numero_tracks, lista_5_tracks)
@@ -199,4 +203,13 @@ def compareDates(date1, date2):
         return 1
     else:
         return -1
+
+def compareTracksids(rep1, rep2):
+    if (rep1["track_id"] == rep2["track_id"]):
+        return 0
+    elif (rep1["track_id"] > rep2["track_id"]):
+        return 1
+    else:
+        return -1
+
 # Funciones de ordenamiento
