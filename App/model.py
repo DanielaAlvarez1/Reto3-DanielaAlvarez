@@ -141,9 +141,7 @@ def musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability):
     mapa = cat["features"]
     a = mp.get(mapa, "energy")
     m_energy = me.getValue(a)
-    print(om.size(m_energy))
     lista_energy = om.values(m_energy, minEnergy, maxEnergy)
-    print(lt.size(lista_energy))
     b = mp.get(mapa, "danceability")
     m_danceability = me.getValue(b)
     lista_danceability = om.values(m_danceability, minDanceability, maxDanceability)
@@ -151,7 +149,7 @@ def musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability):
     for e in lt.iterator(lista_danceability):
         for rep in lt.iterator(e):
             lt.addLast(lista_d, rep)
-    return musica(lista_energy, lista_danceability)
+    return musica(lista_energy, lista_d)
 
 def musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo):
     mapa = cat["features"]
@@ -165,7 +163,7 @@ def musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo):
     for e in lt.iterator(lista_tempo):
         for rep in lt.iterator(e):
             lt.addLast(lista_t, rep)
-    return musica(lista_instru, lista_tempo)
+    return musica(lista_instru, lista_t)
     
 def musica(lista1, lista2):
     arbol_pistas = om.newMap(omaptype='RBT',
