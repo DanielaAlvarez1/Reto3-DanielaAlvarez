@@ -47,6 +47,7 @@ def loadFeatures(cat, features):
     for rep in input_file:
         while a:
             model.addCategories(cat, rep)
+            print(rep)
             a = False
         add = model.addRep(cat, rep)
     return cat
@@ -55,8 +56,12 @@ def loadHashtags(cat, hashtags):
     hfile = cf.data_dir + "subsamples-small" + "\\" + hashtags
     input_file = csv.DictReader(open(hfile, encoding="utf-8"),
                                 delimiter=",")
+    a = True
     for rep in input_file:
-        model.addHashtag(cat, rep)
+        if a:
+            print(rep)
+        a = False
+        #model.addHashtag(cat, rep)
 
 def loadSentiment(cat, sentiment):
     sfile = cf.data_dir + "subsamples-small" + "\\" + sentiment
@@ -76,3 +81,6 @@ def treeHeight(arbol):
 # Funciones de consulta sobre el catálogo
 def caracterizarrep(cat, carac, minimo, maximo):
     return model.caracterizarrep(cat, carac, minimo, maximo)
+
+def musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability):
+    return model.musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability)

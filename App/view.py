@@ -69,6 +69,7 @@ while True:
         minimo = float(input("Ingrese el valor mínimo de característica: "))
         maximo = float(input("Ingrese el valor máximo de característica: "))
         info = controller.caracterizarrep(cat, carac, minimo, maximo)
+        print("\nLa característica {0} estuvo entre {1} y {2} para: ".format(carac, minimo, maximo))
         print("\nTotal de Reproducciones: " + str(info[0]))
         print("Artistas Únicos: " + str(info[1]))
         print("\nPara resolver este requerimiento, se creó un RBT donde las llaves fueron los artistas\
@@ -78,9 +79,29 @@ while True:
         print('Altura del arbol: ' + str(controller.treeHeight(info[2])))
 
     elif int(inputs[0]) == 4:
-        pass
+        minEnergy = float(input("Ingrese el valor mínimo de Energy que desea en las pistas: "))
+        maxEnergy = float(input("Ingrese el valor máximo de Energy que desea en las pistas: "))
+        minDanceability = float(input("Ingrese el valor mínimo de Danceability que desea en las pistas: "))
+        maxDanceability = float(input("Ingrese el valor máximo de Danceability que desea en las pistas: "))
+        info = controller.musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability)
+        print("\nEnergy estuvo entre {0} y {1}".format(minEnergy, maxEnergy))
+        print("Danceability estuvo entre {0} y {1}".format(minDanceability, maxDanceability))
+        print("Total de pistas únicas en eventos: " + str(info[0]))
+        print("\nUnique tracks")
+        num = 1
+        for tracks in lt.iterator(info[1]):
+            track_id = tracks["track_id"]
+            energy = tracks["energy"]
+            dance = track["danceability"]
+            print("Track {0}: {1} con energia de {2} y danceabilidad de {3}".format(num, track_id, energy, dance))
+            num-=1
+
     elif int(inputs[0]) == 5:
-        pass
+        minEnergy = float(input("Ingrese el valor mínimo de Energy que desea en las pistas: "))
+        maxEnergy = float(input("Ingrese el valor máximo de Energy que desea en las pistas: "))
+        minDanceability = float(input("Ingrese el valor mínimo de Danceability que desea en las pistas: "))
+        maxDanceability = float(input("Ingrese el valor máximo de Danceability que desea en las pistas: "))
+        info = controller.musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability)
     elif int(inputs[0]) == 6:
         pass
     elif int(inputs[0]) == 7:

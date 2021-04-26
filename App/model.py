@@ -56,7 +56,7 @@ def initCatalog():
 # Funciones para agregar informacion al catalogo
 def addCategories(cat, rep):
     mapa = cat["features"]
-    num_cat = 8
+    num_cat = 9
     for llave in rep:
         if num_cat > 0:
             mp.put(mapa, llave, om.newMap(omaptype='RBT',
@@ -73,7 +73,9 @@ def addRep(cat, rep):
             valor_cat = float(rep[llave])
             a = mp.get(mapa, llave)
             mapa_cat = me.getValue(a)
-            info = {"artist_id": rep["artist_id"], "track_id": rep["track_id"], "created_at": rep["created_at"]}
+            info = {"artist_id": rep["artist_id"], "track_id": rep["track_id"], "created_at": rep["created_at"],
+                    "energy": rep["energy"], "danceability": rep["danceability"], "tempo": rep["tempo"], 
+                    "instrumentalness": rep["instrumentalness"]}
             if om.contains(mapa_cat, valor_cat):
                 c = om.get(mapa_cat, valor_cat)
                 lista_valor = me.getValue(c)
@@ -135,6 +137,52 @@ def caracterizarrep(cat, carac, minimo, maximo):
 
     artistas = om.size(arbol_artistas)
     return (eventos_escucha, artistas, arbol_artistas)
+
+def musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability):
+    mapa = cat["features"]
+    a = mp.get(mapa, "energy")
+    m_energy = me.getValue(a)
+    lista_energy = om.values(m_energy, minEnergy, maxEnergy)
+    b = mp.get(mapa, "danceability")
+    m_danceability = me.getValue(b)
+    lista_danceability = om.values(m_danceability, minDanceability, maxDanceability)
+    lista_d = lt.newList(datastructure="ARRAY_LIST")
+    for e in lt.iterator(lista_danceability):
+        for rep in lt.iterator(e):
+            lt.addLast(lista_d, rep)
+    return musica(lista_energy, lista_danceability)
+
+def musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo):
+    mapa = cat["features"]
+    a = mp.get(mapa, "instrumentalness")
+    m_instru = me.getValue(a)
+    lista_instru = om.values(m_instru, minInstru, maxInstru)
+    b = mp.get(mapa, "tempo")
+    m_tempo = me.getValue(b)
+    lista_tempo = om.values(m_tempo, minTempo, maxTempo)
+    lista_t = lt.newList(datastructure="ARRAY_LIST")
+    for e in lt.iterator(lista_tempo):
+        for rep in lt.iterator(e):
+            lt.addLast(lista_t, rep)
+    return musica(lista_instru, lista_tempo)
+    
+def musica(lista1, lista2):
+    arbol_pistas = om.newMap(omaptype='RBT',
+                                      comparefunction=compareValue)
+    lista_5_tracks = lt.newList(datastructure="ARRAY_LIST")
+
+    n = 5
+    for listas in lt.iterator(lista1):
+        for reps in lt.iterator(listas):
+            if lt.isPresent(lista2, reps) > 0:
+                track_id = reps["track_id"]
+                om.put(arbol_pistas, track_id, reps)
+                while n>0:
+                    lt.addLast(lista_5_tracks, reps)
+                    n-= 1
+
+    numero_tracks = om.size(arbol_pistas)
+    return (numero_tracks, lista_5_tracks)
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 def compareValue(val1, val2):
