@@ -48,8 +48,6 @@ def printMenu():
     print("6- Estudiar los géneros musicales")
     print("7- Indicar el género musical mas escuchado en el tiempo")
 
-catalog = None
-
 """
 Menu principal
 """
@@ -113,6 +111,7 @@ while True:
             tempo = tracks["tempo"]
             print("Track {0}: {1} con energia de {2} y danceabilidad de {3}".format(num, track_id, instru, tempo))
             num-=1
+
     elif int(inputs[0]) == 6:
         pass
     elif int(inputs[0]) == 7:

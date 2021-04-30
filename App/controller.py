@@ -45,7 +45,7 @@ def loadFeatures(cat, features):
                                 delimiter=",")
     a = True
     for rep in input_file:
-        while a:
+        if a:
             model.addCategories(cat, rep)
             print(rep)
             a = False
@@ -61,7 +61,7 @@ def loadHashtags(cat, hashtags):
         if a:
             print(rep)
         a = False
-        #model.addHashtag(cat, rep)
+        model.addHashtag(cat, rep)
 
 def loadSentiment(cat, sentiment):
     sfile = cf.data_dir + "subsamples-small" + "\\" + sentiment
@@ -83,4 +83,7 @@ def caracterizarrep(cat, carac, minimo, maximo):
     return model.caracterizarrep(cat, carac, minimo, maximo)
 
 def musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability):
-    return model.musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability)
+    return model.musicafestejar2(cat, minEnergy, maxEnergy, minDanceability, maxDanceability)
+
+def musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo):
+    return model.musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo)
