@@ -32,6 +32,7 @@ from DISClib.ADT import orderedmap as om
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
 import datetime
+import random
 assert cf
 
 """
@@ -200,19 +201,31 @@ def musicafestejar2(cat, minEnergy, maxEnergy, minDanceability, maxDanceability)
     a = mp.get(mapa, "energy-dance")
     m_energy = me.getValue(a)
     lista_energy = om.values(m_energy, minEnergy, maxEnergy)
-
-    n = 5
-    numero_tracks = 0
+    arbol_pistas = om.newMap(omaptype='RBT',
+                                      comparefunction=compareValue)
     lista_5_tracks = lt.newList(datastructure="ARRAY_LIST")
+
     for i in lt.iterator(lista_energy):
         lista_dance = om.values(i, minDanceability, maxDanceability)
         for rep in lt.iterator(lista_dance):
             for e in lt.iterator(rep):
-                numero_tracks+=1
-                if n>0:
-                    lt.addLast(lista_5_tracks, rep)
-                    print(rep)
-                    n-=1
+                track_id = e["track_id"]
+                om.put(arbol_pistas, track_id, e)
+
+    numero_tracks = om.size(arbol_pistas)
+    print(numero_tracks)
+    tracks_aleatorios = random.sample(range(0, numero_tracks), 5)
+    llaves = lt.newList(datastructure="ARRAY_LIST")
+
+    for n in tracks_aleatorios:
+        llave = om.select(arbol_pistas, n)
+        print(llave)
+        lt.addLast(llaves, llave)
+
+    for a in lt.iterator(llaves):
+        rep = om.get(arbol_pistas, a)
+        rep_1 = me.getValue(rep)
+        lt.addLast(lista_5_tracks, rep_1)
 
     return (numero_tracks, lista_5_tracks)
 

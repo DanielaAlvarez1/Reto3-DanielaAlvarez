@@ -86,13 +86,13 @@ while True:
         print("Danceability estuvo entre {0} y {1}".format(minDanceability, maxDanceability))
         print("Total de pistas únicas en eventos: " + str(info[0]))
         print("\nUnique tracks")
-        num = 5
+        num = 1
         for tracks in lt.iterator(info[1]):
             track_id = tracks["track_id"]
             energy = tracks["energy"]
             dance = tracks["danceability"]
             print("Track {0}: {1} con energia de {2} y danceabilidad de {3}".format(num, track_id, energy, dance))
-            num-=1
+            num+=1
 
     elif int(inputs[0]) == 5:
         minInstru = float(input("Ingrese el valor mínimo de Instrumentalness que desea en las pistas: "))
