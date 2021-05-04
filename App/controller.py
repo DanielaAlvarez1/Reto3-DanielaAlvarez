@@ -83,7 +83,7 @@ def caracterizarrep(cat, carac, minimo, maximo):
     return model.caracterizarrep(cat, carac, minimo, maximo)
 
 def musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability):
-    return model.musicafestejar2(cat, minEnergy, maxEnergy, minDanceability, maxDanceability)
+    return model.musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability)
 
 def musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo):
     return model.musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo)

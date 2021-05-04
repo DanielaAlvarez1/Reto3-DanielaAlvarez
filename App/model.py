@@ -178,48 +178,41 @@ def caracterizarrep(cat, carac, minimo, maximo):
 
 def musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability):
     mapa = cat["features"]
-    a = mp.get(mapa, "energy")
-    m_energy = me.getValue(a)
-    lista_energy = om.values(m_energy, minEnergy, maxEnergy)
-    lista_e = lt.newList(datastructure="ARRAY_LIST", cmpfunction= compareTracksids)
-    for i in lt.iterator(lista_energy):
-        for rep in lt.iterator(i):
-            lt.addLast(lista_e, rep)
-    print("primeralista")
-    b = mp.get(mapa, "danceability")
-    m_danceability = me.getValue(b)
-    lista_danceability = om.values(m_danceability, minDanceability, maxDanceability)
-    lista_d = lt.newList(datastructure="ARRAY_LIST", cmpfunction= compareTracksids)
-    for e in lt.iterator(lista_danceability):
-        for rep in lt.iterator(e):
-            lt.addLast(lista_d, rep)
-    print("segundalista")
-    return musica(lista_e, lista_d)
-
-def musicafestejar2(cat, minEnergy, maxEnergy, minDanceability, maxDanceability):
-    mapa = cat["features"]
     a = mp.get(mapa, "energy-dance")
     m_energy = me.getValue(a)
     lista_energy = om.values(m_energy, minEnergy, maxEnergy)
+    return musica(lista_energy, minDanceability, maxDanceability)
+
+def musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo):
+    mapa = cat["features"]
+    a = mp.get(mapa, "tempo-instru")
+    m_tempo = me.getValue(a)
+    lista_tempo = om.values(m_tempo, minTempo, maxTempo)
+    return musica(lista_tempo, minInstru, maxInstru)
+    
+def musica(out_list, min_val, max_val):
     arbol_pistas = om.newMap(omaptype='RBT',
                                       comparefunction=compareValue)
     lista_5_tracks = lt.newList(datastructure="ARRAY_LIST")
 
-    for i in lt.iterator(lista_energy):
-        lista_dance = om.values(i, minDanceability, maxDanceability)
-        for rep in lt.iterator(lista_dance):
+    for i in lt.iterator(out_list):
+        in_list = om.values(i, min_val, max_val)
+        for rep in lt.iterator(in_list):
             for e in lt.iterator(rep):
                 track_id = e["track_id"]
                 om.put(arbol_pistas, track_id, e)
 
     numero_tracks = om.size(arbol_pistas)
-    print(numero_tracks)
+    if numero_tracks >= 5:
+        num = 5
+    else:
+        num = numero_tracks
+
     tracks_aleatorios = random.sample(range(0, numero_tracks), 5)
     llaves = lt.newList(datastructure="ARRAY_LIST")
 
     for n in tracks_aleatorios:
         llave = om.select(arbol_pistas, n)
-        print(llave)
         lt.addLast(llaves, llave)
 
     for a in lt.iterator(llaves):
@@ -227,43 +220,6 @@ def musicafestejar2(cat, minEnergy, maxEnergy, minDanceability, maxDanceability)
         rep_1 = me.getValue(rep)
         lt.addLast(lista_5_tracks, rep_1)
 
-    return (numero_tracks, lista_5_tracks)
-
-def musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo):
-    mapa = cat["features"]
-    a = mp.get(mapa, "instrumentalness")
-    m_instru = me.getValue(a)
-    lista_instru = om.values(m_instru, minInstru, maxInstru)
-    lista_i = lt.newList(datastructure="SINGLE_LINKED", cmpfunction= compareTracksids)
-    for i in lt.iterator(lista_instru):
-        for rep in lt.iterator(i):
-            lt.addLast(lista_i, rep)
-    print("primeralista")
-    b = mp.get(mapa, "tempo")
-    m_tempo = me.getValue(b)
-    lista_tempo = om.values(m_tempo, minTempo, maxTempo)
-    lista_t = lt.newList(datastructure="SINGLE_LINKED")
-    for e in lt.iterator(lista_tempo):
-        for rep in lt.iterator(e):
-            lt.addLast(lista_t, rep)
-    print("segundalista")
-    return musica(lista_i, lista_t)
-    
-def musica(lista1, lista2):
-    arbol_pistas = om.newMap(omaptype='RBT',
-                                      comparefunction=compareValue)
-    lista_5_tracks = lt.newList(datastructure="ARRAY_LIST")
-
-    n = 5
-    for reps in lt.iterator(lista1):
-        if lt.isPresent(lista2, reps) > 0:
-            track_id = reps["track_id"]
-            om.put(arbol_pistas, track_id, reps)
-            while n>0:
-                lt.addLast(lista_5_tracks, reps)
-                n-= 1
-    print("termine de añadir")
-    numero_tracks = om.size(arbol_pistas)
     return (numero_tracks, lista_5_tracks)
 
 # Funciones utilizadas para comparar elementos dentro de una lista
