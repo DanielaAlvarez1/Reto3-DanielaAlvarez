@@ -208,7 +208,7 @@ def musica(out_list, min_val, max_val):
     else:
         num = numero_tracks
 
-    tracks_aleatorios = random.sample(range(0, numero_tracks), 5)
+    tracks_aleatorios = random.sample(range(0, numero_tracks), num)
     llaves = lt.newList(datastructure="ARRAY_LIST")
 
     for n in tracks_aleatorios:
