@@ -104,16 +104,64 @@ while True:
         print("Tempo estuvo entre {0} y {1}".format(minTempo, maxTempo))
         print("Total de pistas únicas en eventos: " + str(info[0]))
         print("\nUnique tracks")
-        num = 5
+        num = 1
         for tracks in lt.iterator(info[1]):
             track_id = tracks["track_id"]
             instru = tracks["instrumentalness"]
             tempo = tracks["tempo"]
             print("Track {0}: {1} con energia de {2} y danceabilidad de {3}".format(num, track_id, instru, tempo))
-            num-=1
+            num+=1
 
     elif int(inputs[0]) == 6:
-        pass
+        print("\nA continuación se presenta una lista de géneros musicales: ")
+        print("\n1. Reggae (Tempo típico de 60 a 90 BPM)")
+        print("2. Down-Tempo (Tempo típico de 70 a 100 BPM)")
+        print("3. Chill-Out (Tempo típico de 90 a 120 BPM)")
+        print("4. Hip-Hop (Tempo típico de 85 a 115 BPM)")
+        print("5. Jazz and Funk (Tempo típico de 120 a 125 BPM)")
+        print("6. Pop (Tempo típico de 100 a 130 BPM)")
+        print("7. R&B (Tempo típico de 60 a 80 BPM)")
+        print("8. Rock (Tempo típico de 110 a 140 BPM)")
+        print("9. Metal (Tempo típico de 100 a 160 BPM)")
+        print("10. Crear genero")
+        strgeneros = input("\nIndique los generos que desea consultar separados por coma (Ej: 2,3,4): ")
+        generos = strgeneros.split(",")
+        listainfo = []
+
+        if "1" in generos:
+            dic = {"nombre": "Reggae", "min_tempo": 60, "max_tempo": 90}
+            listainfo.append(dic)
+        if "2" in generos:
+            dic = {"nombre": "Down-Tempo", "min_tempo": 70, "max_tempo": 100}
+            listainfo.append(dic)
+        if "3" in generos:
+            dic = {"nombre": "Chill-Out", "min_tempo": 90, "max_tempo": 120}
+            listainfo.append(dic)
+        if "4" in generos:
+            dic = {"nombre": "Hip-Hop", "min_tempo": 85, "max_tempo": 115}
+            listainfo.append(dic)
+        if "5" in generos:
+            dic = {"nombre": "Jazz and Funk", "min_tempo": 120, "max_tempo": 125}
+            listainfo.append(dic)
+        if "6" in generos:
+            dic = {"nombre": "Pop", "min_tempo": 100, "max_tempo": 130}
+            listainfo.append(dic)
+        if "7" in generos:
+            dic = {"nombre": "R&B", "min_tempo": 60, "max_tempo": 80}
+            listainfo.append(dic)
+        if "8" in generos:
+            dic = {"nombre": "Rock", "min_tempo": 110, "max_tempo": 140}
+            listainfo.append(dic)
+        if "9" in generos:
+            dic = {"nombre": "Metal", "min_tempo": 100, "max_tempo": 160}
+            listainfo.append(dic)
+        if "10" in generos:
+            nombre = input("Ingrese el nombre del genero que desea crear: ")
+            min_tempo = float(input("Ingrese el valor mínimo de tempo que desea para este nuevo género: "))
+            max_tempo = float(input("Ingrese el valor máximo de tempo que desea para este nuevo género: "))
+            dic = {"nombre": nombre, "min_tempo": min_tempo, "max_tempo": max_tempo}
+
+        info = controller.generosmusicales(cat, listageneros)
     elif int(inputs[0]) == 7:
         pass
 

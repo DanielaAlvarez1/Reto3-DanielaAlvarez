@@ -60,56 +60,58 @@ def addCategories(cat, rep):
     num_cat = 9
     for llave in rep:
         if num_cat > 0:
-            mp.put(mapa, llave, om.newMap(omaptype='RBT',
+            if llave == "energy":
+                mp.put(mapa, "energy-dance", om.newMap(omaptype='RBT',
+                                      comparefunction=compareValue))
+            elif llave == "tempo":
+                mp.put(mapa, "tempo-instru", om.newMap(omaptype='RBT',
+                                      comparefunction=compareValue))
+            else:
+                mp.put(mapa, llave, om.newMap(omaptype='RBT',
                                       comparefunction=compareValue))
         else:
             break
         num_cat-=1
-    mp.put(mapa, "energy-dance", om.newMap(omaptype='RBT',
-                                      comparefunction=compareValue))
-    mp.put(mapa, "tempo-instru", om.newMap(omaptype='RBT',
-                                      comparefunction=compareValue))
 
 def addRep(cat, rep):
     mapa = cat["features"]
     num_cat = 9
     for llave in rep:
         if num_cat > 0:
-            valor_cat = float(rep[llave])
-            a = mp.get(mapa, llave)
-            mapa_cat = me.getValue(a)
             info = {"artist_id": rep["artist_id"], "track_id": rep["track_id"], "created_at": rep["created_at"],
-                    "energy": rep["energy"], "danceability": rep["danceability"], "tempo": rep["tempo"], 
-                    "instrumentalness": rep["instrumentalness"]}
-            if om.contains(mapa_cat, valor_cat):
-                c = om.get(mapa_cat, valor_cat)
-                lista_valor = me.getValue(c)
-                lt.addLast(lista_valor, info)
+                    llave: rep[llave]}
+            if llave == "energy":
+                valor_e = float(rep["energy"])
+                valor_d = float(rep["danceability"])
+                a = mp.get(mapa, "energy-dance")
+                mapa_cat = me.getValue(a)
+                info["danceability"] = valor_d
+                mapa_valor_e = addInternalMap(mapa_cat, info, valor_e, valor_d)
+                om.put(mapa_cat, valor_e, mapa_valor_e)
+
+            elif llave == "tempo":
+                valor_t = float(rep["tempo"])
+                valor_i = float(rep["instrumentalness"])
+                a = mp.get(mapa, "tempo-instru")
+                mapa_cat = me.getValue(a)
+                info["instrumentalness"] = valor_i
+                mapa_valor_t = addInternalMap(mapa_cat, info, valor_t, valor_i)
+                om.put(mapa_cat, valor_t, mapa_valor_t)
             else:
-                lista_valor = lt.newList(datastructure='SINGLE_LINKED')
-                lt.addLast(lista_valor, info)
-            om.put(mapa_cat, valor_cat, lista_valor)
+                valor_cat = float(rep[llave])
+                a = mp.get(mapa, llave)
+                mapa_cat = me.getValue(a)
+                if om.contains(mapa_cat, valor_cat):
+                    c = om.get(mapa_cat, valor_cat)
+                    lista_valor = me.getValue(c)
+                    lt.addLast(lista_valor, info)
+                else:
+                    lista_valor = lt.newList(datastructure='SINGLE_LINKED')
+                    lt.addLast(lista_valor, info)
+                om.put(mapa_cat, valor_cat, lista_valor)
         else:
             break
-        num_cat-=1
-        if llave == "energy":
-            valor_e = float(rep["energy"])
-            valor_d = float(rep["danceability"])
-            a = mp.get(mapa, "energy-dance")
-            mapa_cat = me.getValue(a)
-            info = {"track_id": rep["track_id"], "energy": rep["energy"], "danceability": rep["danceability"]}
-            mapa_valor_e = addInternalMap(mapa_cat, info, valor_e, valor_d)
-            om.put(mapa_cat, valor_e, mapa_valor_e)
-
-        if llave == "tempo":
-            valor_t = float(rep["tempo"])
-            valor_i = float(rep["instrumentalness"])
-            a = mp.get(mapa, "tempo-instru")
-            mapa_cat = me.getValue(a)
-            info = {"track_id": rep["track_id"], "tempo": rep["tempo"], "instrumentalness": rep["instrumentalness"]}
-            mapa_valor_t = addInternalMap(mapa_cat, info, valor_t, valor_i)
-            om.put(mapa_cat, valor_t, mapa_valor_t)
-            
+        num_cat-=1        
     return cat
 
 def addHashtag(cat, rep):
@@ -152,9 +154,24 @@ def treeHeight(arbol):
 # Funciones de consulta
 def caracterizarrep(cat, carac, minimo, maximo):
     mapa = cat["features"]
-    a = mp.get(mapa, carac)
-    m_carac = me.getValue(a)
-    listareps = om.values(m_carac, minimo, maximo)
+
+    if (carac == "energy") or (carac == "tempo"):
+        listareps = lt.newList(datastructure= "ARRAY_LIST")
+        if carac == "energy":
+            a = mp.get(mapa,"energy-dance")
+        else:
+            a = mp.get(mapa,"tempo-instru")
+        m_carac = me.getValue(a)
+        m_reps = om.values(m_carac, minimo, maximo)
+        for i in lt.iterator(m_reps):
+            l_reps = om.valueSet(i)
+            for e in lt.iterator(l_reps):
+                lt.addLast(listareps, e)
+    else:
+        a = mp.get(mapa, carac)
+        m_carac = me.getValue(a)
+        listareps = om.values(m_carac, minimo, maximo)
+
     arbol_artistas = om.newMap(omaptype='RBT',
                                       comparefunction=compareValue)
     eventos_escucha = 0
@@ -221,6 +238,9 @@ def musica(out_list, min_val, max_val):
         lt.addLast(lista_5_tracks, rep_1)
 
     return (numero_tracks, lista_5_tracks)
+
+def generosmusicales(cat, listageneros):
+    pass
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 def compareValue(val1, val2):

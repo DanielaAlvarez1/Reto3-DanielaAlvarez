@@ -87,3 +87,6 @@ def musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability):
 
 def musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo):
     return model.musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo)
+
+def generosmusicales(cat, listageneros):
+    return model.generosmusicales(cat, listageneros)
