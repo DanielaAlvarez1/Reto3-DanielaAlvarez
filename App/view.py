@@ -161,7 +161,19 @@ while True:
             max_tempo = float(input("Ingrese el valor máximo de tempo que desea para este nuevo género: "))
             dic = {"nombre": nombre, "min_tempo": min_tempo, "max_tempo": max_tempo}
 
-        info = controller.generosmusicales(cat, listageneros)
+        info = controller.generosmusicales(cat, listainfo)
+        escuchas = info[0]
+        lista = info[1]
+        print("Total de Reproducciones: " + str(escuchas))
+        for i in lt.iterator(lista):
+            print("\nPara {0} el tempo esta entre {1} y {2} BPM".format(i["nombre"], i["min_tempo"], i["max_tempo"]))
+            print("Reproducciones para {0}: {1} con {2} artistas distintos".format(i["nombre"], i["escuchas"], i["artistas"]))
+            print("Algunos artistas para {0}".format(i["nombre"]))
+            n = 1
+            for i in lt.iterator(i["id_artistas"]):
+                print("Artista {0}: {1}".format(str(n), i))
+                n+=1
+
     elif int(inputs[0]) == 7:
         pass
 

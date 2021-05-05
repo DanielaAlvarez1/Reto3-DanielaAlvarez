@@ -240,7 +240,23 @@ def musica(out_list, min_val, max_val):
     return (numero_tracks, lista_5_tracks)
 
 def generosmusicales(cat, listageneros):
-    pass
+    info_generos = lt.newList(datastructure="ARRAY_LIST")
+    tot_escuchas = 0
+
+    for gen in listageneros:
+        info = caracterizarrep(cat, "tempo", gen["min_tempo"], gen["max_tempo"])
+        gen["escuchas"] = info[0]
+        tot_escuchas+= gen["escuchas"]
+        gen["artistas"] = info[1]
+        arbol = info[2]
+        lista_id_artistas = lt.newList(datastructure="ARRAY_LIST")
+        for i in range(1, 11):
+            id_artista = om.select(arbol, i)
+            lt.addLast(lista_id_artistas, id_artista)
+        gen["id_artistas"] = lista_id_artistas
+        lt.addLast(info_generos, gen)
+
+    return (tot_escuchas, info_generos)
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 def compareValue(val1, val2):
