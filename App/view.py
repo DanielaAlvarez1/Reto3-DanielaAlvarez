@@ -24,6 +24,7 @@ import config as cf
 import sys
 import controller
 from DISClib.ADT import list as lt
+import datetime
 assert cf
 
 hashtags = "user_track_hashtag_timestamp-small.csv"
@@ -175,7 +176,11 @@ while True:
                 n+=1
 
     elif int(inputs[0]) == 7:
-        pass
+        hora_1 = input("Ingrese el límite inferior del rango de horas que desea consultar en formato 24H (Ej. 23:00:00): ")
+        hora_2 = input("Ingrese el límite superior del rango de horas que desea consultar en formato 24H (Ej. 23:30:00): ")
+        h_1 = datetime.strptime(hora_1, '%H:%M:%S')
+        h_2 = datetime.strptime(hora_2, '%H:%M:%S')
+        info = controller.generotiempo(cat, h_1, h_2)
 
     else:
         sys.exit(0)

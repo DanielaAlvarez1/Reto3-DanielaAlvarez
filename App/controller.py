@@ -35,8 +35,8 @@ def initCatalog():
     return cat
 # Funciones para la carga de datos
 def loadData(cat, hashtags, features, sentiment):
-    loadFeatures(cat, features)
     loadHashtags(cat, hashtags)
+    loadFeatures(cat, features)
     loadSentiment(cat, sentiment)
 
 def loadFeatures(cat, features):
@@ -76,7 +76,6 @@ def repSize(arbol):
 
 def treeHeight(arbol):
     return model.treeHeight(arbol)
-# Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
 def caracterizarrep(cat, carac, minimo, maximo):
@@ -90,3 +89,6 @@ def musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo):
 
 def generosmusicales(cat, listageneros):
     return model.generosmusicales(cat, listageneros)
+
+def generotiempo(cat, hora_1, h_2):
+    return model.generotiempo(cat, hora_1, h_2)

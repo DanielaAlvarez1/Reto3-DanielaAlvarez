@@ -72,8 +72,11 @@ def addCategories(cat, rep):
         else:
             break
         num_cat-=1
-
 def addRep(cat, rep):
+    addRepFeatures(cat, rep)
+    addArtistHashtag(cat, rep)
+
+def addRepFeatures(cat, rep):
     mapa = cat["features"]
     num_cat = 9
     for llave in rep:
@@ -86,7 +89,7 @@ def addRep(cat, rep):
                 a = mp.get(mapa, "energy-dance")
                 mapa_cat = me.getValue(a)
                 info["danceability"] = valor_d
-                mapa_valor_e = addInternalMap(mapa_cat, info, valor_e, valor_d)
+                mapa_valor_e = addInternalMap(mapa_cat, info, valor_e, valor_d, 'RBT')
                 om.put(mapa_cat, valor_e, mapa_valor_e)
 
             elif llave == "tempo":
@@ -95,20 +98,13 @@ def addRep(cat, rep):
                 a = mp.get(mapa, "tempo-instru")
                 mapa_cat = me.getValue(a)
                 info["instrumentalness"] = valor_i
-                mapa_valor_t = addInternalMap(mapa_cat, info, valor_t, valor_i)
+                mapa_valor_t = addInternalMap(mapa_cat, info, valor_t, valor_i, 'RBT')
                 om.put(mapa_cat, valor_t, mapa_valor_t)
             else:
                 valor_cat = float(rep[llave])
                 a = mp.get(mapa, llave)
                 mapa_cat = me.getValue(a)
-                if om.contains(mapa_cat, valor_cat):
-                    c = om.get(mapa_cat, valor_cat)
-                    lista_valor = me.getValue(c)
-                    lt.addLast(lista_valor, info)
-                else:
-                    lista_valor = lt.newList(datastructure='SINGLE_LINKED')
-                    lt.addLast(lista_valor, info)
-                om.put(mapa_cat, valor_cat, lista_valor)
+                mapa_valor = addMapKey(mapa_cat, valor_cat, info)
         else:
             break
         num_cat-=1        
@@ -116,33 +112,64 @@ def addRep(cat, rep):
 
 def addHashtag(cat, rep):
     mapa = cat["hashtags"]
-    fecha = rep["created_at"]
-    date = datetime.datetime.strptime(fecha, '%Y-%m-%d %H:%M:%S')
-    om.put(mapa, date, rep)
+    fecha_1 = rep["created_at"]
+    fecha_2 = fecha_1[11:]
+    date_days = datetime.datetime.strptime(fecha_1, '%Y-%m-%d %H:%M:%S')
+    date_hours = datetime.datetime.strptime(fecha_2, '%H:%M:%S')
+    m_day = addInternalMap(mapa, rep, date_hours, date_days, 'BST')
+    om.put(mapa, date_days, m_day)
+
+def addArtistHashtag(cat, rep):
+    n = True
+    mapa = cat["hashtags"]
+    fecha_1 = rep["created_at"]
+    fecha_2 = fecha_1[11:]
+    artista = rep["artist_id"]
+    date_days = datetime.datetime.strptime(fecha_1, '%Y-%m-%d %H:%M:%S')
+    date_hours = datetime.datetime.strptime(fecha_2, '%H:%M:%S')
+    if om.contains(mapa, date_hours):
+        a = om.get(mapa, date_hours)
+        mapa_hora = me.getValue(a)
+        if n:
+            print(str(date_days))
+            print(str(date_hours))
+            n = False
+        if om.contains(mapa_hora, date_days):
+            b = om.get(mapa_hora, date_days)
+            lista_fecha = me.getValue(b)
+            for i in lt.iterator(lista_fecha):
+                if i["user_id"] == rep["user_id"]:
+                    if i["created_at"] == rep["created_at"]:
+                        if i["track_id"] == rep["track_id"]:
+                            i["artist_id"] = artista
 
 def addSentiment(cat, sent):
     mapa = cat["sentiment"]
     vader_avg = sent["vader_avg"]
     hashtag = sent["hashtag"]
-    om.put(mapa, vader_avg, hashtag)
+    om.put(mapa, hashtag, vader_avg)
 
 # Funciones para creacion de datos
-def addInternalMap(mapa, info, out_value, in_value):
+def addInternalMap(mapa, info, out_value, in_value, om_type):
     if om.contains(mapa, out_value):
         c = om.get(mapa, out_value)
         mapa_out_value = me.getValue(c)
-        if om.contains(mapa_out_value, in_value):
-            d = om.get(mapa_out_value, in_value)
-            lista_valor = me.getValue(d)
-            lt.addLast(lista_valor, info)
-        else:
-            lista_valor = lt.newList(datastructure= "SINGLE_LINKED")
-            lt.addLast(lista_valor, info)
-            om.put(mapa_out_value, in_value, lista_valor)
+        mapa_out_value = addMapKey(mapa_out_value, in_value, info)
     else:
-        mapa_out_value = om.newMap(omaptype='RBT',
+        mapa_out_value = om.newMap(omaptype=om_type,
                                     comparefunction=compareValue)
     return mapa_out_value
+
+def addMapKey(omap, value, info):
+    if om.contains(omap, value):
+        c = om.get(omap, value)
+        lista_valor = me.getValue(c)
+        lt.addLast(lista_valor, info)
+    else:
+        lista_valor = lt.newList(datastructure='ARRAY_LIST')
+        lt.addLast(lista_valor, info)
+    om.put(omap, value, lista_valor)
+    return omap
 
 # Funciones de consulta de datos del map
 def repSize(arbol):
@@ -257,6 +284,9 @@ def generosmusicales(cat, listageneros):
         lt.addLast(info_generos, gen)
 
     return (tot_escuchas, info_generos)
+
+def generotiempo(cat, hora_1, h_2):
+    pass
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 def compareValue(val1, val2):
