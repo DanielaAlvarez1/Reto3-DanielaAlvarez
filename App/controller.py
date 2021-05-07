@@ -93,4 +93,4 @@ def generosmusicales(cat, listageneros):
     return model2.generosmusicales(cat, listageneros)
 
 def generotiempo(cat, hora_1, hora_2):
-    return model.generotiempo(cat, hora_1, hora_2)
+    return model2.generotiempo(cat, hora_1, hora_2)

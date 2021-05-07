@@ -333,6 +333,28 @@ def generosmusicales(cat, listgenres):
 
     return (tot_reps, l_genres)
 
+def generotiempo(cat, hora_1, hora_2):
+    m = cat["genres"]
+    l_gen_name = mp.keySet(m)
+    l_gen_reps = lt.newList(datastructure="ARRAY_LIST")
+    tot_reps = 0
+
+    for gen in lt.iterator(l_gen_name):
+        a = mp.get(m, gen)
+        m_gen = me.getValue(a)
+        l_reps = om.values(m_gen, hora_1, hora_2)
+        reps = 0
+        for e in lt.iterator(l_reps):
+            size = lt.size(e)
+            reps+=size
+        tot_reps+=reps
+        dic = {"nombre": gen, "reps": reps}
+        lt.addLast(l_gen_reps, dic)
+
+    sorted_gen = sortReps(l_gen_reps, compareReps)
+
+    return (tot_reps, sorted_gen)
+
 # Funciones utilizadas para comparar elementos dentro de una lista
 def compareValue(val1, val2):
     if (val1 == val2):
@@ -349,3 +371,14 @@ def compareRefValue(dic1, dic2):
         return 1
     else:
         return -1
+
+def compareReps(genre1, genre2):
+     if genre1["reps"] > genre2["reps"]:
+        return True
+     else:
+        return False 
+
+# Funciones de Ordenamiento 
+def sortReps(lst, comparefunction):
+    sorted_list = sa.sort(lst, comparefunction)
+    return sorted_list
