@@ -22,6 +22,7 @@
 
 import config as cf
 import model
+import model2
 import csv
 
 
@@ -31,7 +32,7 @@ El controlador se encarga de mediar entre la vista y el modelo.
 
 # Inicialización del Catálogo de libros
 def initCatalog():
-    cat = model.initCatalog()
+    cat = model2.initCatalog()
     return cat
 # Funciones para la carga de datos
 def loadData(cat, hashtags, features, sentiment):
@@ -46,11 +47,11 @@ def loadFeatures(cat, features):
     a = True
     for rep in input_file:
         if a:
-            model.addCategories(cat, rep)
-            model.addGenre(cat)
+            model2.addCategories(cat, rep)
+            model2.addGenre(cat)
             print(rep)
             a = False
-        add = model.addRep(cat, rep)
+        add = model2.addRep(cat, rep)
     return cat
 
 def loadHashtags(cat, hashtags):
@@ -62,14 +63,14 @@ def loadHashtags(cat, hashtags):
         if a:
             print(rep)
         a = False
-        model.addHashtag(cat, rep)
+        model2.addHashtag(cat, rep)
 
 def loadSentiment(cat, sentiment):
     sfile = cf.data_dir + "subsamples-small" + "\\" + sentiment
     input_file = csv.DictReader(open(sfile, encoding="utf-8"),
                                 delimiter=",")
     for sent in input_file:
-        model.addSentiment(cat, sent)
+        model2.addSentiment(cat, sent)
 
 # Funciones para consulta de datos del map
 def repSize(arbol):
@@ -80,7 +81,7 @@ def treeHeight(arbol):
 
 # Funciones de consulta sobre el catálogo
 def caracterizarrep(cat, carac, minimo, maximo):
-    return model.caracterizarrep(cat, carac, minimo, maximo)
+    return model2.caracterizarrep(cat, carac, minimo, maximo)
 
 def musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability):
     return model.musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability)

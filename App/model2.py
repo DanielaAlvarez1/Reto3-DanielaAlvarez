@@ -50,7 +50,7 @@ def initCatalog():
                                    maptype='PROBING',
                                    loadfactor=0.5)
     cat['hashtags'] = om.newMap(omaptype='RBT',
-                                    comparefunction=compareDates)
+                                    comparefunction=compareValue)
     cat['sentiment'] = mp.newMap(11,
                                    maptype='PROBING',
                                    loadfactor=0.5)
@@ -90,7 +90,7 @@ def addRepFeatures(cat, rep):
             mp.put(m, key, m_categorie_new)
         else:
             break
-        num_cat-=1        
+        n_categories-=1        
     return cat
 
 def addRepGenre(cat, rep):
@@ -98,66 +98,82 @@ def addRepGenre(cat, rep):
     tempo = float(rep["tempo"])
     hour = datetime.datetime.strptime(rep["created_at"][11:], '%H:%M:%S')
     date = datetime.datetime.strptime(rep["created_at"], '%Y-%m-%d %H:%M:%S')
-    info = {"artist_id": rep["artist_id"], "track_id": rep["track_id"], "created_at": date}
+    info = {"artist_id": rep["artist_id"], "track_id": rep["track_id"], "created_at": date, "user_id": rep["user_id"]}
     if (tempo >= 60) and (tempo <= 90):
         name = "Reggae"
-        a = mp.get(mapa, name)
+        a = mp.get(m, name)
         m_genre = me.getValue(a)
         m_genre_new = addMapKey(m_genre, hour, info)
         mp.put(m, name, m_genre_new)
     if (tempo >= 70) and  (tempo <= 100):
         name = "Down-Tempo"
-        a = mp.get(mapa, name)
+        a = mp.get(m, name)
         m_genre = me.getValue(a)
         m_genre_new = addMapKey(m_genre, hour, info)
         mp.put(m, name, m_genre_new)
     if (tempo >= 90) and  (tempo <= 120):
         name = "Chill-Out"
-        a = mp.get(mapa, name)
+        a = mp.get(m, name)
         m_genre = me.getValue(a)
         m_genre_new = addMapKey(m_genre, hour, info)
         mp.put(m, name, m_genre_new)
     if (tempo >= 85) and  (tempo <= 115):
         name = "Hip-Hop"
-        a = mp.get(mapa, name)
+        a = mp.get(m, name)
         m_genre = me.getValue(a)
         m_genre_new = addMapKey(m_genre, hour, info)
         mp.put(m, name, m_genre_new)
     if (tempo >= 120) and  (tempo <= 125):
         name = "Jazz and Funk"
-        a = mp.get(mapa, name)
+        a = mp.get(m, name)
         m_genre = me.getValue(a)
         m_genre_new = addMapKey(m_genre, hour, info)
         mp.put(m, name, m_genre_new)
     if (tempo >= 100) and  (tempo <= 130):
         name = "Pop"
-        a = mp.get(mapa, name)
+        a = mp.get(m, name)
         m_genre = me.getValue(a)
         m_genre_new = addMapKey(m_genre, hour, info)
         mp.put(m, name, m_genre_new)
     if (tempo >= 60) and  (tempo <= 80):
         name = "R&B"
-        a = mp.get(mapa, name)
+        a = mp.get(m, name)
         m_genre = me.getValue(a)
         m_genre_new = addMapKey(m_genre, hour, info)
         mp.put(m, name, m_genre_new)
     if (tempo >= 110) and  (tempo <= 140):
         name = "Rock"
-        a = mp.get(mapa, name)
+        a = mp.get(m, name)
         m_genre = me.getValue(a)
         m_genre_new = addMapKey(m_genre, hour, info)
         mp.put(m, name, m_genre_new)
     if (tempo >= 100) and  (tempo <= 160):
         name = "Metal"
-        a = mp.get(mapa, name)
+        a = mp.get(m, name)
         m_genre = me.getValue(a)
         m_genre_new = addMapKey(m_genre, hour, info)
         mp.put(m, name, m_genre_new)
-        
+
+def addHashtag(cat, rep):
+    m = cat["hashtags"]
+    hour = datetime.datetime.strptime(rep["created_at"][11:], '%H:%M:%S')
+    date = datetime.datetime.strptime(rep["created_at"], '%Y-%m-%d %H:%M:%S')
+    info = {"user_id": rep["user_id"], "track_id": rep["track_id"], "created_at": date}
+    addMapKey(m, hour, info)
+
+def addSentiment(cat, sent):
+    m = cat["sentiment"]
+    if sent["vader_avg"] == "":
+        vader_avg = 0.0
+    else:
+        vader_avg = float(sent["vader_avg"])
+    hashtag = sent["hashtag"]
+    mp.put(m, hashtag, vader_avg)
+
 # Funciones para creacion de datos
 def addMapKey(c_map, value, info):
     if om.contains(c_map, value):
-        a = om.get(omap, value)
+        a = om.get(c_map, value)
         l_value = me.getValue(a)
     else:
         l_value = lt.newList(datastructure='ARRAY_LIST')
@@ -171,9 +187,43 @@ def addGenre(cat):
             "Rock", "Metal"]
     for i in genres:
         m_genre = om.newMap(omaptype= "RBT",
-                        comparefunction=compareDates)
+                        comparefunction=compareValue)
         mp.put(m, i, m_genre)
 
+# Funciones de consulta de datos del map
+def repSize(arbol):
+    return om.size(arbol)
+
+def treeHeight(arbol):
+    return om.height(arbol)
+
+# Funciones de Consulta
+def caracterizarrep(cat, carac, minimo, maximo):
+    m = cat["features"]
+    a = mp.get(m, carac)
+    m_carac = me.getValue(a)
+    l_reps = om.values(m_carac, minimo, maximo)
+
+    t_artists = om.newMap(omaptype='RBT',
+                                      comparefunction=compareValue)
+    num_reps = 0
+
+    for lists in lt.iterator(l_reps):
+        size = lt.size(lists)
+        num_reps+=size
+        for reps in lt.iterator(lists):
+            artist = reps["artist_id"]
+            if om.contains(t_artists, artist):
+                c = om.get(t_artists, artist)
+                l_artist = me.getValue(c)
+            else:
+                l_artist = lt.newList(datastructure="SINGLE_LINKED")
+            lt.addLast(l_artist, reps)
+            om.put(t_artists, artist, l_artist)
+
+    artists = om.size(t_artists)
+    return (num_reps, artists, t_artists)
+    
 # Funciones utilizadas para comparar elementos dentro de una lista
 def compareValue(val1, val2):
     if (val1 == val2):
