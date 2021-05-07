@@ -90,7 +90,7 @@ def musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo):
     return model2.musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo)
 
 def generosmusicales(cat, listageneros):
-    return model.generosmusicales(cat, listageneros)
+    return model2.generosmusicales(cat, listageneros)
 
 def generotiempo(cat, hora_1, hora_2):
     return model.generotiempo(cat, hora_1, hora_2)

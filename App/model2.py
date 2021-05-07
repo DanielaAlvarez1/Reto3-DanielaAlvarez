@@ -314,6 +314,25 @@ def musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo):
 
     return (n_tracks, l_tracks)
 
+def generosmusicales(cat, listgenres):
+    l_genres = lt.newList(datastructure="ARRAY_LIST")
+    tot_reps = 0
+
+    for gen in listgenres:
+        info = caracterizarrep(cat, "tempo", gen["min_tempo"], gen["max_tempo"])
+        gen["escuchas"] = info[0]
+        tot_reps+= gen["escuchas"]
+        gen["artistas"] = info[1]
+        tree = info[2]
+        l_id_artists = lt.newList(datastructure="ARRAY_LIST")
+        for i in range(1, 11):
+            id_artist = om.select(tree, i)
+            lt.addLast(l_id_artists, id_artist)
+        gen["id_artistas"] = l_id_artists
+        lt.addLast(l_genres, gen)
+
+    return (tot_reps, l_genres)
+
 # Funciones utilizadas para comparar elementos dentro de una lista
 def compareValue(val1, val2):
     if (val1 == val2):
