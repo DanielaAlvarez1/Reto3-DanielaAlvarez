@@ -84,10 +84,10 @@ def caracterizarrep(cat, carac, minimo, maximo):
     return model2.caracterizarrep(cat, carac, minimo, maximo)
 
 def musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability):
-    return model.musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability)
+    return model2.musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability)
 
 def musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo):
-    return model.musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo)
+    return model2.musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo)
 
 def generosmusicales(cat, listageneros):
     return model.generosmusicales(cat, listageneros)

@@ -82,6 +82,10 @@ def addRepFeatures(cat, rep):
     info = {"artist_id": rep["artist_id"], "track_id": rep["track_id"], "created_at": date}
     for key in rep:
         if n_categories > 0:
+            if key == "danceability":
+                info["energy"] = rep["energy"]
+            if key == "instrumentalness":
+                info["tempo"] = rep["tempo"]
             cat_value = float(rep[key])
             info[key] = cat_value
             a = mp.get(m, key)
@@ -205,7 +209,7 @@ def caracterizarrep(cat, carac, minimo, maximo):
     l_reps = om.values(m_carac, minimo, maximo)
 
     t_artists = om.newMap(omaptype='RBT',
-                                      comparefunction=compareValue)
+                            comparefunction=compareValue)
     num_reps = 0
 
     for lists in lt.iterator(l_reps):
@@ -223,12 +227,106 @@ def caracterizarrep(cat, carac, minimo, maximo):
 
     artists = om.size(t_artists)
     return (num_reps, artists, t_artists)
+
+def musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability):
+    m = cat["features"]
+    m_reps = om.newMap(omaptype='RBT',
+                            comparefunction=compareValue)
+    m_tracks = om.newMap(omaptype='RBT',
+                            comparefunction=compareValue)
+
+    a = mp.get(m, "energy")
+    m_energy = me.getValue(a)
+    l_energy = om.values(m_energy, minEnergy, maxEnergy)
+    for lists in lt.iterator(l_energy):
+        for e in lt.iterator(lists):
+            om.put(m_reps, e["track_id"], "")
     
+    b = mp.get(m, "danceability")
+    m_dance = me.getValue(b)
+    l_dance = om.values(m_dance, minDanceability, maxDanceability)
+    for lists in lt.iterator(l_dance):
+        for e in lt.iterator(lists):
+            if om.contains(m_reps, e["track_id"]):
+                om.put(m_tracks, e["track_id"], e)
+
+    n_tracks = om.size(m_tracks)
+    if n_tracks >= 5:
+        num = 5
+    else:
+        num = n_tracks
+
+    random_tracks = random.sample(range(0, n_tracks), num)
+    keys = lt.newList(datastructure="ARRAY_LIST")
+    l_tracks = lt.newList(datastructure="ARRAY_LIST")
+
+    for n in random_tracks:
+        key = om.select(m_tracks, n)
+        lt.addLast(keys, key)
+
+    for a in lt.iterator(keys):
+        rep = om.get(m_tracks, a)
+        rep_info = me.getValue(rep)
+        lt.addLast(l_tracks, rep_info)
+
+    return (n_tracks, l_tracks)
+
+def musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo):
+    m = cat["features"]
+    m_reps = om.newMap(omaptype='RBT',
+                            comparefunction=compareValue)
+    m_tracks = om.newMap(omaptype='RBT',
+                            comparefunction=compareValue)
+
+    a = mp.get(m, "tempo")
+    m_tempo = me.getValue(a)
+    l_tempo = om.values(m_tempo, minTempo, maxTempo)
+    for lists in lt.iterator(l_tempo):
+        for e in lt.iterator(lists):
+            om.put(m_reps, e["track_id"], "")
+    
+    b = mp.get(m, "instrumentalness")
+    m_instru = me.getValue(b)
+    l_instru = om.values(m_instru, minInstru, maxInstru)
+    for lists in lt.iterator(l_instru):
+        for e in lt.iterator(lists):
+            if om.contains(m_reps, e["track_id"]):
+                om.put(m_tracks, e["track_id"], e)
+
+    n_tracks = om.size(m_tracks)
+    if n_tracks >= 5:
+        num = 5
+    else:
+        num = n_tracks
+
+    random_tracks = random.sample(range(0, n_tracks), num)
+    keys = lt.newList(datastructure="ARRAY_LIST")
+    l_tracks = lt.newList(datastructure="ARRAY_LIST")
+
+    for n in random_tracks:
+        key = om.select(m_tracks, n)
+        lt.addLast(keys, key)
+
+    for a in lt.iterator(keys):
+        rep = om.get(m_tracks, a)
+        rep_info = me.getValue(rep)
+        lt.addLast(l_tracks, rep_info)
+
+    return (n_tracks, l_tracks)
+
 # Funciones utilizadas para comparar elementos dentro de una lista
 def compareValue(val1, val2):
     if (val1 == val2):
         return 0
     elif (val1 > val2):
+        return 1
+    else:
+        return -1
+
+def compareRefValue(dic1, dic2):
+    if (dic1["ref"] == dic2["ref"]):
+        return 0
+    elif (dic1["ref"] > dic2["ref"]):
         return 1
     else:
         return -1
