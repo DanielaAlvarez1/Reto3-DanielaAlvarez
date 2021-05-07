@@ -47,6 +47,7 @@ def loadFeatures(cat, features):
     for rep in input_file:
         if a:
             model.addCategories(cat, rep)
+            model.addGenre(cat)
             print(rep)
             a = False
         add = model.addRep(cat, rep)
@@ -90,5 +91,5 @@ def musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo):
 def generosmusicales(cat, listageneros):
     return model.generosmusicales(cat, listageneros)
 
-def generotiempo(cat, hora_1, h_2):
-    return model.generotiempo(cat, hora_1, h_2)
+def generotiempo(cat, hora_1, hora_2):
+    return model.generotiempo(cat, hora_1, hora_2)

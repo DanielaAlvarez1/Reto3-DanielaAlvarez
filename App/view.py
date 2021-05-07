@@ -115,6 +115,7 @@ while True:
 
     elif int(inputs[0]) == 6:
         print("\nA continuación se presenta una lista de géneros musicales: ")
+        print("0. Crear genero")
         print("\n1. Reggae (Tempo típico de 60 a 90 BPM)")
         print("2. Down-Tempo (Tempo típico de 70 a 100 BPM)")
         print("3. Chill-Out (Tempo típico de 90 a 120 BPM)")
@@ -124,7 +125,6 @@ while True:
         print("7. R&B (Tempo típico de 60 a 80 BPM)")
         print("8. Rock (Tempo típico de 110 a 140 BPM)")
         print("9. Metal (Tempo típico de 100 a 160 BPM)")
-        print("10. Crear genero")
         strgeneros = input("\nIndique los generos que desea consultar separados por coma (Ej: 2,3,4): ")
         generos = strgeneros.split(",")
         listainfo = []
@@ -156,7 +156,7 @@ while True:
         if "9" in generos:
             dic = {"nombre": "Metal", "min_tempo": 100, "max_tempo": 160}
             listainfo.append(dic)
-        if "10" in generos:
+        if "0" in generos:
             nombre = input("Ingrese el nombre del genero que desea crear: ")
             min_tempo = float(input("Ingrese el valor mínimo de tempo que desea para este nuevo género: "))
             max_tempo = float(input("Ingrese el valor máximo de tempo que desea para este nuevo género: "))
@@ -176,10 +176,10 @@ while True:
                 n+=1
 
     elif int(inputs[0]) == 7:
-        hora_1 = input("Ingrese el límite inferior del rango de horas que desea consultar en formato 24H (Ej. 23:00:00): ")
-        hora_2 = input("Ingrese el límite superior del rango de horas que desea consultar en formato 24H (Ej. 23:30:00): ")
-        h_1 = datetime.strptime(hora_1, '%H:%M:%S')
-        h_2 = datetime.strptime(hora_2, '%H:%M:%S')
+        h_1 = input("Ingrese el límite inferior del rango de horas que desea consultar en formato 24H (Ej. 23:00:00): ")
+        h_2 = input("Ingrese el límite superior del rango de horas que desea consultar en formato 24H (Ej. 23:30:00): ")
+        #h_1 = datetime.datetime.strptime(hora_1, '%H:%M:%S')
+        #h_2 = datetime.datetime.strptime(hora_2, '%H:%M:%S')
         info = controller.generotiempo(cat, h_1, h_2)
 
     else:
