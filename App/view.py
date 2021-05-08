@@ -40,7 +40,7 @@ operación solicitada
 """
 
 def printMenu():
-    print("Bienvenido")
+    print("\nBienvenido")
     print("1- Crear Catalogo")
     print("2- Cargar información en el catálogo")
     print("3- Caracterizar las reproducciones")
@@ -67,7 +67,8 @@ while True:
         carac = input("Ingrese la característica de contenido que desea consultar: ").lower().replace(" ","")
         minimo = float(input("Ingrese el valor mínimo de característica: "))
         maximo = float(input("Ingrese el valor máximo de característica: "))
-        info = controller.caracterizarrep(cat, carac, minimo, maximo)
+        answer = controller.caracterizarrep(cat, carac, minimo, maximo)
+        info = answer[2]
         print("\nLa característica {0} estuvo entre {1} y {2} para: ".format(carac, minimo, maximo))
         print("\nTotal de Reproducciones: " + str(info[0]))
         print("Artistas Únicos: " + str(info[1]))
@@ -76,13 +77,16 @@ while True:
         print("\nLa información de dicho arbol se presenta a continuación:")
         print('Elementos cargados: ' + str(controller.repSize(info[2])))
         print('Altura del arbol: ' + str(controller.treeHeight(info[2])))
+        print("Tiempo [ms]: ", f"{answer[0]:.3f}", "  ||  ",
+              "Memoria [kB]: ", f"{answer[1]:.3f}")
 
     elif int(inputs[0]) == 4:
         minEnergy = float(input("Ingrese el valor mínimo de Energy que desea en las pistas: "))
         maxEnergy = float(input("Ingrese el valor máximo de Energy que desea en las pistas: "))
         minDanceability = float(input("Ingrese el valor mínimo de Danceability que desea en las pistas: "))
         maxDanceability = float(input("Ingrese el valor máximo de Danceability que desea en las pistas: "))
-        info = controller.musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability)
+        answer = controller.musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability)
+        info=answer[2]
         print("\nEnergy estuvo entre {0} y {1}".format(minEnergy, maxEnergy))
         print("Danceability estuvo entre {0} y {1}".format(minDanceability, maxDanceability))
         print("Total de pistas únicas en eventos: " + str(info[0]))
@@ -94,13 +98,16 @@ while True:
             dance = tracks["danceability"]
             print("Track {0}: {1} con energia de {2} y danceabilidad de {3}".format(num, track_id, energy, dance))
             num+=1
+        print("Tiempo [ms]: ", f"{answer[0]:.3f}", "  ||  ",
+              "Memoria [kB]: ", f"{answer[1]:.3f}")
 
     elif int(inputs[0]) == 5:
         minInstru = float(input("Ingrese el valor mínimo de Instrumentalness que desea en las pistas: "))
         maxInstru = float(input("Ingrese el valor máximo de Instrumentalness que desea en las pistas: "))
         minTempo = float(input("Ingrese el valor mínimo de Tempo que desea en las pistas: "))
         maxTempo = float(input("Ingrese el valor máximo de Tempo que desea en las pistas: "))
-        info = controller.musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo)
+        answer = controller.musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo)
+        info = answer[2]
         print("\nInstrumentalness estuvo entre {0} y {1}".format(minInstru, maxInstru))
         print("Tempo estuvo entre {0} y {1}".format(minTempo, maxTempo))
         print("Total de pistas únicas en eventos: " + str(info[0]))
@@ -112,6 +119,8 @@ while True:
             tempo = tracks["tempo"]
             print("Track {0}: {1} con energia de {2} y danceabilidad de {3}".format(num, track_id, instru, tempo))
             num+=1
+        print("Tiempo [ms]: ", f"{answer[0]:.3f}", "  ||  ",
+              "Memoria [kB]: ", f"{answer[1]:.3f}")
 
     elif int(inputs[0]) == 6:
         print("\nA continuación se presenta una lista de géneros musicales: ")
@@ -162,7 +171,8 @@ while True:
             max_tempo = float(input("Ingrese el valor máximo de tempo que desea para este nuevo género: "))
             dic = {"nombre": nombre, "min_tempo": min_tempo, "max_tempo": max_tempo}
 
-        info = controller.generosmusicales(cat, listainfo)
+        answer = controller.generosmusicales(cat, listainfo)
+        info = answer[2]
         escuchas = info[0]
         lista = info[1]
         print("Total de Reproducciones: " + str(escuchas))
@@ -174,19 +184,25 @@ while True:
             for i in lt.iterator(i["id_artistas"]):
                 print("Artista {0}: {1}".format(str(n), i))
                 n+=1
+        print("Tiempo [ms]: ", f"{answer[0]:.3f}", "  ||  ",
+              "Memoria [kB]: ", f"{answer[1]:.3f}")
 
     elif int(inputs[0]) == 7:
         hora_1 = input("Ingrese el límite inferior del rango de horas que desea consultar en formato 24H (Ej. 23:00:00): ")
         hora_2 = input("Ingrese el límite superior del rango de horas que desea consultar en formato 24H (Ej. 23:30:00): ")
         h_1 = datetime.datetime.strptime(hora_1, '%H:%M:%S')
         h_2 = datetime.datetime.strptime(hora_2, '%H:%M:%S')
-        info = controller.generotiempo(cat, h_1, h_2)
+        answer = controller.generotiempo(cat, h_1, h_2)
+        info = answer[2]
         tot_escuchas = info[0]
         lista_gen = info[1]
         print("\nTotal de reproducciones: " + str(tot_escuchas))
         print(str(info[1]))
         print(str(info[2]))
         print(str(info[3]))
+        print("Tiempo [ms]: ", f"{answer[0]:.3f}", "  ||  ",
+              "Memoria [kB]: ", f"{answer[1]:.3f}")
+              
     else:
         sys.exit(0)
 sys.exit(0)
