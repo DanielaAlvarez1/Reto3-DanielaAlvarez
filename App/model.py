@@ -1,4 +1,4 @@
-"""
+﻿"""
  * Copyright 2020, Departamento de sistemas y Computación,
  * Universidad de Los Andes
  *
@@ -227,24 +227,24 @@ def caracterizarrep(cat, carac, minimo, maximo):
     artists = om.size(t_artists)
     return (num_reps, artists, t_artists)
 
-def musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability):
+def musica(cat, carac_1, carac_2, min_1, max_1, min_2, max_2):
     m = cat["features"]
     m_reps = om.newMap(omaptype='RBT',
                             comparefunction=compareValue)
     m_tracks = om.newMap(omaptype='RBT',
                             comparefunction=compareValue)
 
-    a = mp.get(m, "energy")
-    m_energy = me.getValue(a)
-    l_energy = om.values(m_energy, minEnergy, maxEnergy)
-    for lists in lt.iterator(l_energy):
+    a = mp.get(m, carac_1)
+    m_1 = me.getValue(a)
+    l_1 = om.values(m_1, min_1, max_1)
+    for lists in lt.iterator(l_1):
         for e in lt.iterator(lists):
             om.put(m_reps, e["track_id"], "")
     
-    b = mp.get(m, "danceability")
-    m_dance = me.getValue(b)
-    l_dance = om.values(m_dance, minDanceability, maxDanceability)
-    for lists in lt.iterator(l_dance):
+    b = mp.get(m, carac_2)
+    m_2 = me.getValue(b)
+    l_2 = om.values(m_2, min_2, max_2)
+    for lists in lt.iterator(l_2):
         for e in lt.iterator(lists):
             if om.contains(m_reps, e["track_id"]):
                 om.put(m_tracks, e["track_id"], e)
@@ -269,49 +269,12 @@ def musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability):
         lt.addLast(l_tracks, rep_info)
 
     return (n_tracks, l_tracks)
+
+def musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability):
+    return musica(cat, "energy", "danceability", minEnergy, maxEnergy, minDanceability, maxDanceability)
 
 def musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo):
-    m = cat["features"]
-    m_reps = om.newMap(omaptype='RBT',
-                            comparefunction=compareValue)
-    m_tracks = om.newMap(omaptype='RBT',
-                            comparefunction=compareValue)
-
-    a = mp.get(m, "tempo")
-    m_tempo = me.getValue(a)
-    l_tempo = om.values(m_tempo, minTempo, maxTempo)
-    for lists in lt.iterator(l_tempo):
-        for e in lt.iterator(lists):
-            om.put(m_reps, e["track_id"], "")
-    
-    b = mp.get(m, "instrumentalness")
-    m_instru = me.getValue(b)
-    l_instru = om.values(m_instru, minInstru, maxInstru)
-    for lists in lt.iterator(l_instru):
-        for e in lt.iterator(lists):
-            if om.contains(m_reps, e["track_id"]):
-                om.put(m_tracks, e["track_id"], e)
-
-    n_tracks = om.size(m_tracks)
-    if n_tracks >= 5:
-        num = 5
-    else:
-        num = n_tracks
-
-    random_tracks = random.sample(range(0, n_tracks), num)
-    keys = lt.newList(datastructure="ARRAY_LIST")
-    l_tracks = lt.newList(datastructure="ARRAY_LIST")
-
-    for n in random_tracks:
-        key = om.select(m_tracks, n)
-        lt.addLast(keys, key)
-
-    for a in lt.iterator(keys):
-        rep = om.get(m_tracks, a)
-        rep_info = me.getValue(rep)
-        lt.addLast(l_tracks, rep_info)
-
-    return (n_tracks, l_tracks)
+    return musica(cat, "tempo", "instrumentalness", minTempo, maxTempo, minInstru, maxInstru)
 
 def generosmusicales(cat, listgenres):
     l_genres = lt.newList(datastructure="ARRAY_LIST")
@@ -350,7 +313,7 @@ def generotiempo(cat, hora_1, hora_2):
             size = lt.size(e)
             reps+=size
             for i in lt.iterator(e):
-                dic = {"track_id" : i["track_id"], "created_at": i["created_at"]}
+                dic = {"track_id" : i["track_id"], "created_at": i["created_at"], "user_id": i["user_id"]}
                 if lt.isPresent(l_gen, dic) == 0:
                 #if lt.isPresent(l_gen, i["track_id"]) == 0:
                     lt.addLast(l_gen, dic)
@@ -375,7 +338,7 @@ def generotiempo(cat, hora_1, hora_2):
         #a = om.get(m_h, i)
         l_hashtags = me.getValue(a)
         for e in lt.iterator(l_hashtags):
-            if e["created_at"] == i["created_at"]:
+#            if e["created_at"] == i["created_at"]:
 #                if e["user_id"] == i["user_id"]:
                     if mp.contains(m_s, e["hashtag"].lower()):
                         b = mp.get(m_s, e["hashtag"].lower())
