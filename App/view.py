@@ -185,6 +185,8 @@ while True:
         lista_gen = info[1]
         print("\nTotal de reproducciones: " + str(tot_escuchas))
         print(str(info[1]))
+        print(str(info[2]))
+        print(str(info[3]))
     else:
         sys.exit(0)
 sys.exit(0)

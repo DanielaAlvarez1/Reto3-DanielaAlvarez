@@ -1,4 +1,4 @@
-﻿"""
+"""
  * Copyright 2020, Departamento de sistemas y Computación,
  * Universidad de Los Andes
  *
@@ -50,177 +50,149 @@ def initCatalog():
                                    maptype='PROBING',
                                    loadfactor=0.5)
     cat['hashtags'] = om.newMap(omaptype='RBT',
-                                    comparefunction=compareDates)
-    cat['sentiment'] = om.newMap(omaptype='RBT',
-                                      comparefunction=compareValue)
+                                    comparefunction=compareValue)
+    cat['sentiment'] = mp.newMap(11,
+                                   maptype='PROBING',
+                                   loadfactor=0.5)
     cat["genres"] = mp.newMap(11,
                                    maptype='PROBING',
                                    loadfactor=0.5)
     return cat
+
 # Funciones para agregar informacion al catalogo
 def addCategories(cat, rep):
-    mapa = cat["features"]
-    num_cat = 9
-    for llave in rep:
-        if num_cat > 0:
-            if llave == "energy":
-                mp.put(mapa, "energy-dance", om.newMap(omaptype='RBT',
-                                      comparefunction=compareValue))
-            elif llave == "tempo":
-                mp.put(mapa, "tempo-instru", om.newMap(omaptype='RBT',
-                                      comparefunction=compareValue))
-            else:
-                mp.put(mapa, llave, om.newMap(omaptype='RBT',
+    m = cat["features"]
+    n_categories = 9
+    for key in rep:
+        if n_categories > 0:
+                mp.put(m, key, om.newMap(omaptype='RBT',
                                       comparefunction=compareValue))
         else:
             break
-        num_cat-=1
+        n_categories-=1
+
 def addRep(cat, rep):
     addRepFeatures(cat, rep)
     addRepGenre(cat, rep)
 
 def addRepFeatures(cat, rep):
-    mapa = cat["features"]
-    num_cat = 9
-    info = {"artist_id": rep["artist_id"], "track_id": rep["track_id"], "created_at": rep["created_at"]}
-    for llave in rep:
-        if num_cat > 0:
-            info[llave] = rep[llave]
-            if llave == "energy":
-                valor_e = float(rep["energy"])
-                valor_d = float(rep["danceability"])
-                a = mp.get(mapa, "energy-dance")
-                mapa_cat = me.getValue(a)
-                info["danceability"] = valor_d
-                mapa_valor_e = addInternalMap(mapa_cat, info, valor_e, valor_d, 'RBT')
-                om.put(mapa_cat, valor_e, mapa_valor_e)
-
-            elif llave == "tempo":
-                valor_t = float(rep["tempo"])
-                valor_i = float(rep["instrumentalness"])
-                a = mp.get(mapa, "tempo-instru")
-                mapa_cat = me.getValue(a)
-                info["instrumentalness"] = valor_i
-                mapa_valor_t = addInternalMap(mapa_cat, info, valor_t, valor_i, 'RBT')
-                om.put(mapa_cat, valor_t, mapa_valor_t)
-            else:
-                valor_cat = float(rep[llave])
-                a = mp.get(mapa, llave)
-                mapa_cat = me.getValue(a)
-                mapa_valor = addMapKey(mapa_cat, valor_cat, info)
+    m = cat["features"]
+    n_categories = 9
+    date = datetime.datetime.strptime(rep["created_at"], '%Y-%m-%d %H:%M:%S')
+    info = {"artist_id": rep["artist_id"], "track_id": rep["track_id"], "created_at": date}
+    for key in rep:
+        if n_categories > 0:
+            if key == "danceability":
+                info["energy"] = rep["energy"]
+            if key == "instrumentalness":
+                info["tempo"] = rep["tempo"]
+            cat_value = float(rep[key])
+            info[key] = cat_value
+            a = mp.get(m, key)
+            m_categorie = me.getValue(a)
+            m_categorie_new = addMapKey(m_categorie, cat_value, info)
+            mp.put(m, key, m_categorie_new)
         else:
             break
-        num_cat-=1        
+        n_categories-=1        
     return cat
 
 def addRepGenre(cat, rep):
-    mapa = cat["genres"]
+    m = cat["genres"]
     tempo = float(rep["tempo"])
-    fecha = rep["created_at"]
-    dia = fecha[:11]
-    hora = fecha[11:]
-    info = {"artist_id": rep["artist_id"], "track_id": rep["track_id"], "created_at": rep["created_at"]}
-    if (tempo >= 60) and  (tempo <= 90):
+    hour = datetime.datetime.strptime(rep["created_at"][11:], '%H:%M:%S')
+    date = datetime.datetime.strptime(rep["created_at"], '%Y-%m-%d %H:%M:%S')
+    info = { "track_id": rep["track_id"],"created_at": date, "user_id": rep["user_id"]}
+    if (tempo >= 60) and (tempo <= 90):
         name = "Reggae"
-        a = mp.get(mapa, name)
-        m = me.getValue(a)
-        m_day = addInternalMap(m, info, hora, dia, 'BST')
-        mp.put(mapa, name, m_day)
+        a = mp.get(m, name)
+        m_genre = me.getValue(a)
+        m_genre_new = addMapKey(m_genre, hour, info)
+        mp.put(m, name, m_genre_new)
     if (tempo >= 70) and  (tempo <= 100):
         name = "Down-Tempo"
-        a = mp.get(mapa, name)
-        m = me.getValue(a)
-        m_day = addInternalMap(m, info, hora, dia, 'BST')
-        mp.put(mapa, name, m_day)
+        a = mp.get(m, name)
+        m_genre = me.getValue(a)
+        m_genre_new = addMapKey(m_genre, hour, info)
+        mp.put(m, name, m_genre_new)
     if (tempo >= 90) and  (tempo <= 120):
         name = "Chill-Out"
-        a = mp.get(mapa, name)
-        m = me.getValue(a)
-        m_day = addInternalMap(m, info, hora, dia, 'BST')
-        mp.put(mapa, name, m_day)
+        a = mp.get(m, name)
+        m_genre = me.getValue(a)
+        m_genre_new = addMapKey(m_genre, hour, info)
+        mp.put(m, name, m_genre_new)
     if (tempo >= 85) and  (tempo <= 115):
         name = "Hip-Hop"
-        a = mp.get(mapa, name)
-        m = me.getValue(a)
-        m_day = addInternalMap(m, info, hora, dia, 'BST')
-        mp.put(mapa, name, m_day)
+        a = mp.get(m, name)
+        m_genre = me.getValue(a)
+        m_genre_new = addMapKey(m_genre, hour, info)
+        mp.put(m, name, m_genre_new)
     if (tempo >= 120) and  (tempo <= 125):
         name = "Jazz and Funk"
-        a = mp.get(mapa, name)
-        m = me.getValue(a)
-        m_day = addInternalMap(m, info, hora, dia, 'BST')
-        mp.put(mapa, name, m_day)
+        a = mp.get(m, name)
+        m_genre = me.getValue(a)
+        m_genre_new = addMapKey(m_genre, hour, info)
+        mp.put(m, name, m_genre_new)
     if (tempo >= 100) and  (tempo <= 130):
         name = "Pop"
-        a = mp.get(mapa, name)
-        m = me.getValue(a)
-        m_day = addInternalMap(m, info, hora, dia, 'BST')
-        mp.put(mapa, name, m_day)
+        a = mp.get(m, name)
+        m_genre = me.getValue(a)
+        m_genre_new = addMapKey(m_genre, hour, info)
+        mp.put(m, name, m_genre_new)
     if (tempo >= 60) and  (tempo <= 80):
         name = "R&B"
-        a = mp.get(mapa, name)
-        m = me.getValue(a)
-        m_day = addInternalMap(m, info, hora, dia, 'BST')
-        mp.put(mapa, name, m_day)
+        a = mp.get(m, name)
+        m_genre = me.getValue(a)
+        m_genre_new = addMapKey(m_genre, hour, info)
+        mp.put(m, name, m_genre_new)
     if (tempo >= 110) and  (tempo <= 140):
         name = "Rock"
-        a = mp.get(mapa, name)
-        m = me.getValue(a)
-        m_day = addInternalMap(m, info, hora, dia, 'BST')
-        mp.put(mapa, name, m_day)
+        a = mp.get(m, name)
+        m_genre = me.getValue(a)
+        m_genre_new = addMapKey(m_genre, hour, info)
+        mp.put(m, name, m_genre_new)
     if (tempo >= 100) and  (tempo <= 160):
         name = "Metal"
-        a = mp.get(mapa, name)
-        m = me.getValue(a)
-        m_day = addInternalMap(m, info, hora, dia, 'BST')
-        mp.put(mapa, name, m_day)
+        a = mp.get(m, name)
+        m_genre = me.getValue(a)
+        m_genre_new = addMapKey(m_genre, hour, info)
+        mp.put(m, name, m_genre_new)
 
 def addHashtag(cat, rep):
-    mapa = cat["hashtags"]
-    fecha = rep["created_at"]
-    dia = fecha[:11]
-    hora = fecha[11:]
-    #date_days = datetime.datetime.strptime(fecha_1, '%Y-%m-%d %H:%M:%S')
-    #date_hours = datetime.datetime.strptime(fecha_2, '%H:%M:%S')
-    m_day = addInternalMap(mapa, rep, hora, dia, 'BST')
-    om.put(mapa, hora, m_day)
+    m = cat["hashtags"]
+    date = datetime.datetime.strptime(rep["created_at"], '%Y-%m-%d %H:%M:%S')
+    info = {"user_id": rep["user_id"], "track_id": rep["track_id"], "created_at": date, "hashtag": rep["hashtag"]}
+    addMapKey(m, rep["track_id"], info)
 
 def addSentiment(cat, sent):
-    mapa = cat["sentiment"]
-    vader_avg = sent["vader_avg"]
+    m = cat["sentiment"]
+    if sent["vader_avg"] == "":
+        vader_avg = 100
+    else:
+        vader_avg = float(sent["vader_avg"])
     hashtag = sent["hashtag"]
-    om.put(mapa, hashtag, vader_avg)
+    mp.put(m, hashtag, vader_avg)
 
 # Funciones para creacion de datos
-def addInternalMap(mapa, info, out_value, in_value, om_type):
-    if om.contains(mapa, out_value):
-        c = om.get(mapa, out_value)
-        mapa_out_value = me.getValue(c)
-        mapa_out_value = addMapKey(mapa_out_value, in_value, info)
+def addMapKey(c_map, value, info):
+    if om.contains(c_map, value):
+        a = om.get(c_map, value)
+        l_value = me.getValue(a)
     else:
-        mapa_out_value = om.newMap(omaptype=om_type,
-                                    comparefunction=compareValue)
-    return mapa_out_value
-
-def addMapKey(omap, value, info):
-    if om.contains(omap, value):
-        c = om.get(omap, value)
-        lista_valor = me.getValue(c)
-        lt.addLast(lista_valor, info)
-    else:
-        lista_valor = lt.newList(datastructure='ARRAY_LIST')
-        lt.addLast(lista_valor, info)
-    om.put(omap, value, lista_valor)
-    return omap
+        l_value = lt.newList(datastructure='ARRAY_LIST')
+    lt.addLast(l_value, info)
+    om.put(c_map, value, l_value)
+    return c_map
 
 def addGenre(cat):
-    mapa = cat["genres"]
-    gen = ["Reggae", "Down-Tempo", "Chill-Out", "Hip-Hop", "Jazz and Funk", "Pop", "R&B", 
+    m = cat["genres"]
+    genres = ["Reggae", "Down-Tempo", "Chill-Out", "Hip-Hop", "Jazz and Funk", "Pop", "R&B", 
             "Rock", "Metal"]
-    for i in gen:
-        m = om.newMap(omaptype= "RBT",
-                        comparefunction=compareDates)
-        mp.put(mapa, i, m)
+    for i in genres:
+        m_genre = om.newMap(omaptype= "RBT",
+                        comparefunction=compareValue)
+        mp.put(m, i, m_genre)
+
 # Funciones de consulta de datos del map
 def repSize(arbol):
     return om.size(arbol)
@@ -228,152 +200,199 @@ def repSize(arbol):
 def treeHeight(arbol):
     return om.height(arbol)
 
-# Funciones de consulta
+# Funciones de Consulta
 def caracterizarrep(cat, carac, minimo, maximo):
-    mapa = cat["features"]
+    m = cat["features"]
+    a = mp.get(m, carac)
+    m_carac = me.getValue(a)
+    l_reps = om.values(m_carac, minimo, maximo)
 
-    if (carac == "energy") or (carac == "tempo"):
-        listareps = lt.newList(datastructure= "ARRAY_LIST")
-        if carac == "energy":
-            a = mp.get(mapa,"energy-dance")
-        else:
-            a = mp.get(mapa,"tempo-instru")
-        m_carac = me.getValue(a)
-        m_reps = om.values(m_carac, minimo, maximo)
-        for i in lt.iterator(m_reps):
-            l_reps = om.valueSet(i)
-            for e in lt.iterator(l_reps):
-                lt.addLast(listareps, e)
-    else:
-        a = mp.get(mapa, carac)
-        m_carac = me.getValue(a)
-        listareps = om.values(m_carac, minimo, maximo)
+    t_artists = om.newMap(omaptype='RBT',
+                            comparefunction=compareValue)
+    num_reps = 0
 
-    arbol_artistas = om.newMap(omaptype='RBT',
-                                      comparefunction=compareValue)
-    eventos_escucha = 0
-
-    for listas in lt.iterator(listareps):
-        tamaño = lt.size(listas)
-        eventos_escucha+=tamaño
-        for reps in lt.iterator(listas):
-            artista = reps["artist_id"]
-            if om.contains(arbol_artistas, artista):
-                c = om.get(arbol_artistas, artista)
-                lista_artista = me.getValue(c)
-                lt.addLast(lista_artista, reps)
+    for lists in lt.iterator(l_reps):
+        size = lt.size(lists)
+        num_reps+=size
+        for reps in lt.iterator(lists):
+            artist = reps["artist_id"]
+            if om.contains(t_artists, artist):
+                c = om.get(t_artists, artist)
+                l_artist = me.getValue(c)
             else:
-                lista_artista = lt.newList(datastructure="SINGLE_LINKED")
-                lt.addLast(lista_artista, reps)
-                om.put(arbol_artistas, artista, lista_artista)
+                l_artist = lt.newList(datastructure="SINGLE_LINKED")
+            lt.addLast(l_artist, reps)
+            om.put(t_artists, artist, l_artist)
 
-    artistas = om.size(arbol_artistas)
-    return (eventos_escucha, artistas, arbol_artistas)
+    artists = om.size(t_artists)
+    return (num_reps, artists, t_artists)
 
 def musicafestejar(cat, minEnergy, maxEnergy, minDanceability, maxDanceability):
-    mapa = cat["features"]
-    a = mp.get(mapa, "energy-dance")
+    m = cat["features"]
+    m_reps = om.newMap(omaptype='RBT',
+                            comparefunction=compareValue)
+    m_tracks = om.newMap(omaptype='RBT',
+                            comparefunction=compareValue)
+
+    a = mp.get(m, "energy")
     m_energy = me.getValue(a)
-    lista_energy = om.values(m_energy, minEnergy, maxEnergy)
-    return musica(lista_energy, minDanceability, maxDanceability)
-
-def musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo):
-    mapa = cat["features"]
-    a = mp.get(mapa, "tempo-instru")
-    m_tempo = me.getValue(a)
-    lista_tempo = om.values(m_tempo, minTempo, maxTempo)
-    return musica(lista_tempo, minInstru, maxInstru)
+    l_energy = om.values(m_energy, minEnergy, maxEnergy)
+    for lists in lt.iterator(l_energy):
+        for e in lt.iterator(lists):
+            om.put(m_reps, e["track_id"], "")
     
-def musica(out_list, min_val, max_val):
-    arbol_pistas = om.newMap(omaptype='RBT',
-                                      comparefunction=compareValue)
-    lista_5_tracks = lt.newList(datastructure="ARRAY_LIST")
+    b = mp.get(m, "danceability")
+    m_dance = me.getValue(b)
+    l_dance = om.values(m_dance, minDanceability, maxDanceability)
+    for lists in lt.iterator(l_dance):
+        for e in lt.iterator(lists):
+            if om.contains(m_reps, e["track_id"]):
+                om.put(m_tracks, e["track_id"], e)
 
-    for i in lt.iterator(out_list):
-        in_list = om.values(i, min_val, max_val)
-        for rep in lt.iterator(in_list):
-            for e in lt.iterator(rep):
-                track_id = e["track_id"]
-                om.put(arbol_pistas, track_id, e)
-
-    numero_tracks = om.size(arbol_pistas)
-    if numero_tracks >= 5:
+    n_tracks = om.size(m_tracks)
+    if n_tracks >= 5:
         num = 5
     else:
-        num = numero_tracks
+        num = n_tracks
 
-    tracks_aleatorios = random.sample(range(0, numero_tracks), num)
-    llaves = lt.newList(datastructure="ARRAY_LIST")
+    random_tracks = random.sample(range(0, n_tracks), num)
+    keys = lt.newList(datastructure="ARRAY_LIST")
+    l_tracks = lt.newList(datastructure="ARRAY_LIST")
 
-    for n in tracks_aleatorios:
-        llave = om.select(arbol_pistas, n)
-        lt.addLast(llaves, llave)
+    for n in random_tracks:
+        key = om.select(m_tracks, n)
+        lt.addLast(keys, key)
 
-    for a in lt.iterator(llaves):
-        rep = om.get(arbol_pistas, a)
-        rep_1 = me.getValue(rep)
-        lt.addLast(lista_5_tracks, rep_1)
+    for a in lt.iterator(keys):
+        rep = om.get(m_tracks, a)
+        rep_info = me.getValue(rep)
+        lt.addLast(l_tracks, rep_info)
 
-    return (numero_tracks, lista_5_tracks)
+    return (n_tracks, l_tracks)
 
-def generosmusicales(cat, listageneros):
-    info_generos = lt.newList(datastructure="ARRAY_LIST")
-    tot_escuchas = 0
+def musicaestudiar(cat, minInstru, maxInstru, minTempo, maxTempo):
+    m = cat["features"]
+    m_reps = om.newMap(omaptype='RBT',
+                            comparefunction=compareValue)
+    m_tracks = om.newMap(omaptype='RBT',
+                            comparefunction=compareValue)
 
-    for gen in listageneros:
+    a = mp.get(m, "tempo")
+    m_tempo = me.getValue(a)
+    l_tempo = om.values(m_tempo, minTempo, maxTempo)
+    for lists in lt.iterator(l_tempo):
+        for e in lt.iterator(lists):
+            om.put(m_reps, e["track_id"], "")
+    
+    b = mp.get(m, "instrumentalness")
+    m_instru = me.getValue(b)
+    l_instru = om.values(m_instru, minInstru, maxInstru)
+    for lists in lt.iterator(l_instru):
+        for e in lt.iterator(lists):
+            if om.contains(m_reps, e["track_id"]):
+                om.put(m_tracks, e["track_id"], e)
+
+    n_tracks = om.size(m_tracks)
+    if n_tracks >= 5:
+        num = 5
+    else:
+        num = n_tracks
+
+    random_tracks = random.sample(range(0, n_tracks), num)
+    keys = lt.newList(datastructure="ARRAY_LIST")
+    l_tracks = lt.newList(datastructure="ARRAY_LIST")
+
+    for n in random_tracks:
+        key = om.select(m_tracks, n)
+        lt.addLast(keys, key)
+
+    for a in lt.iterator(keys):
+        rep = om.get(m_tracks, a)
+        rep_info = me.getValue(rep)
+        lt.addLast(l_tracks, rep_info)
+
+    return (n_tracks, l_tracks)
+
+def generosmusicales(cat, listgenres):
+    l_genres = lt.newList(datastructure="ARRAY_LIST")
+    tot_reps = 0
+
+    for gen in listgenres:
         info = caracterizarrep(cat, "tempo", gen["min_tempo"], gen["max_tempo"])
         gen["escuchas"] = info[0]
-        tot_escuchas+= gen["escuchas"]
+        tot_reps+= gen["escuchas"]
         gen["artistas"] = info[1]
-        arbol = info[2]
-        lista_id_artistas = lt.newList(datastructure="ARRAY_LIST")
+        tree = info[2]
+        l_id_artists = lt.newList(datastructure="ARRAY_LIST")
         for i in range(1, 11):
-            id_artista = om.select(arbol, i)
-            lt.addLast(lista_id_artistas, id_artista)
-        gen["id_artistas"] = lista_id_artistas
-        lt.addLast(info_generos, gen)
+            id_artist = om.select(tree, i)
+            lt.addLast(l_id_artists, id_artist)
+        gen["id_artistas"] = l_id_artists
+        lt.addLast(l_genres, gen)
 
-    return (tot_escuchas, info_generos)
-
-def generosmusicales2(cat, listageneros):
-    mapa = cat["genres"]
-    info_generos = lt.newList(datastructure="ARRAY_LIST")
-    tot_escuchas = 0
-    listagen = ["Reggae", "Down-Tempo", "Chill-Out", "Hip-Hop", "Jazz and Funk", "Pop", "R&B", 
-            "Rock", "Metal"]
-
-    for gen in listageneros:
-        escuchas = 0
-        arbol_artistas = om.newMap(omaptype='RBT',
-                                      comparefunction=compareValue)
-        if gen["nombre"] in listagen:
-            a = mp.get(mapa, gen["nombre"])
-            mgenre = me.getValue(a)
-            b = om.valueSet(mgenre)
-            for i in lt.iterator(b):
-                lrep = om.valueSet(i)
-                for e in lt.iterator(lrep):
-                    tamanio = lt.size(e)
-                    escuchas+=tamanio
-                    artista = e["artist_id"]
-                    om.put(arbol_artistas, artista, artista)
-            lista_id_artistas = lt.newList(datastructure="ARRAY_LIST")
-            for i in range(1, 11):
-                id_artista = om.select(arbol_artistas, i)
-                lt.addLast(lista_id_artistas, id_artista)
-            gen["escuchas"] = escuchas
-            gen["artistas"] = om.size(arbol_artistas)
-            gen["id_artistas"] = lista_id_artistas
-        lt.addLast(info_generos, gen)
-        tot_escuchas+=escuchas
-
-    return (tot_escuchas, info_generos)
+    return (tot_reps, l_genres)
 
 def generotiempo(cat, hora_1, hora_2):
-    mapa = cat["hashtags"]
-    a = om.keySet(mapa)
-    b = lt.getElement(a, 1)
-    print(b)
+    m_g = cat["genres"]
+    l_gen_name = mp.keySet(m_g)
+    l_gen_reps = lt.newList(datastructure="ARRAY_LIST")
+    l_max_tracks_genres = ""
+    max_reps_genre = 0
+    tot_reps = 0
+    for gen in lt.iterator(l_gen_name):
+        a = mp.get(m_g, gen)
+        m_gen = me.getValue(a)
+        l_reps = om.values(m_gen, hora_1, hora_2)
+        reps = 0
+        l_gen = lt.newList(datastructure="ARRAY_LIST", cmpfunction=compareTrackIds)
+        #l_gen = lt.newList(datastructure="ARRAY_LIST", cmpfunction=compareValue)
+        for e in lt.iterator(l_reps):
+            size = lt.size(e)
+            reps+=size
+            for i in lt.iterator(e):
+                dic = {"track_id" : i["track_id"], "created_at": i["created_at"]}
+                if lt.isPresent(l_gen, dic) == 0:
+                #if lt.isPresent(l_gen, i["track_id"]) == 0:
+                    lt.addLast(l_gen, dic)
+                    #lt.addLast(l_gen, i["track_id"])
+        if reps > max_reps_genre:
+            max_reps_genre = reps
+            l_max_tracks_genres = l_gen
+        tot_reps+=reps
+        dic = {"nombre": gen, "reps": reps}
+        lt.addLast(l_gen_reps, dic)
+
+    unique_tracks = lt.size(l_max_tracks_genres)
+    sorted_gen = sortReps(l_gen_reps, compareReps)
+    top_genre = lt.getElement(sorted_gen, 0)
+
+    m_h = cat["hashtags"]
+    m_s = cat["sentiment"]
+    for i in lt.iterator(l_max_tracks_genres):
+        num_hashtags = 0
+        sum_vader = 0
+        a = om.get(m_h, i["track_id"])
+        #a = om.get(m_h, i)
+        l_hashtags = me.getValue(a)
+        for e in lt.iterator(l_hashtags):
+            if e["created_at"] == i["created_at"]:
+#                if e["user_id"] == i["user_id"]:
+                    if mp.contains(m_s, e["hashtag"].lower()):
+                        b = mp.get(m_s, e["hashtag"].lower())
+                        vader = me.getValue(b)
+                        if vader != 100:
+                            num_hashtags+=1
+                            sum_vader+=vader
+        if num_hashtags == 0:
+            num_hashtags = 1
+        vader_avg = sum_vader/num_hashtags
+        i["numero hashtags"] = num_hashtags
+        i["vader promedio"] = vader_avg
+
+    sorted_ht = sortReps(l_max_tracks_genres, compareTrackHashtags)
+    top_tracks = lt.subList(sorted_ht, 0, 10)
+
+    return (tot_reps, sorted_gen, unique_tracks, top_tracks)
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 def compareValue(val1, val2):
@@ -384,20 +403,35 @@ def compareValue(val1, val2):
     else:
         return -1
 
-def compareDates(date1, date2):
-    if (date1 == date2):
+def compareRefValue(dic1, dic2):
+    if (dic1["ref"] == dic2["ref"]):
         return 0
-    elif (date1 > date2):
+    elif (dic1["ref"] > dic2["ref"]):
         return 1
     else:
         return -1
 
-def compareTracksids(rep1, rep2):
-    if (rep1["track_id"] == rep2["track_id"]):
+def compareTrackIds(dic1, dic2):
+    if (dic1["track_id"] == dic2["track_id"]):
         return 0
-    elif (rep1["track_id"] > rep2["track_id"]):
+    elif (dic1["track_id"] > dic2["track_id"]):
         return 1
     else:
         return -1
 
-# Funciones de ordenamiento
+def compareReps(genre1, genre2):
+     if genre1["reps"] > genre2["reps"]:
+        return True
+     else:
+        return False 
+
+def compareTrackHashtags(track1, track2):
+     if track1["numero hashtags"] > track2["numero hashtags"]:
+        return True
+     else:
+        return False    
+
+# Funciones de Ordenamiento 
+def sortReps(lst, comparefunction):
+    sorted_list = sa.sort(lst, comparefunction)
+    return sorted_list
