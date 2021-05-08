@@ -160,8 +160,8 @@ def addRepGenre(cat, rep):
 
 def addHashtag(cat, rep):
     m = cat["hashtags"]
-    date = datetime.datetime.strptime(rep["created_at"], '%Y-%m-%d %H:%M:%S')
-    info = {"user_id": rep["user_id"], "track_id": rep["track_id"], "created_at": date, "hashtag": rep["hashtag"]}
+    date = datetime.datetime.strptime(rep["created_at"][11:], '%H:%M:%S')
+    info = { "track_id": rep["track_id"], "created_at": date, "hashtag": rep["hashtag"]}
     addMapKey(m, rep["track_id"], info)
 
 def addSentiment(cat, sent):
@@ -170,7 +170,7 @@ def addSentiment(cat, sent):
         vader_avg = 100
     else:
         vader_avg = float(sent["vader_avg"])
-    hashtag = sent["hashtag"]
+    hashtag = sent["hashtag"].lower()
     mp.put(m, hashtag, vader_avg)
 
 # Funciones para creacion de datos
@@ -307,17 +307,13 @@ def generotiempo(cat, hora_1, hora_2):
         m_gen = me.getValue(a)
         l_reps = om.values(m_gen, hora_1, hora_2)
         reps = 0
-        l_gen = lt.newList(datastructure="ARRAY_LIST", cmpfunction=compareTrackIds)
-        #l_gen = lt.newList(datastructure="ARRAY_LIST", cmpfunction=compareValue)
+        l_gen = lt.newList(datastructure="ARRAY_LIST", cmpfunction=compareValue)
         for e in lt.iterator(l_reps):
             size = lt.size(e)
             reps+=size
             for i in lt.iterator(e):
-                dic = {"track_id" : i["track_id"], "created_at": i["created_at"], "user_id": i["user_id"]}
-                if lt.isPresent(l_gen, dic) == 0:
-                #if lt.isPresent(l_gen, i["track_id"]) == 0:
-                    lt.addLast(l_gen, dic)
-                    #lt.addLast(l_gen, i["track_id"])
+                if lt.isPresent(l_gen, i["track_id"]) == 0:
+                    lt.addLast(l_gen, i["track_id"])
         if reps > max_reps_genre:
             max_reps_genre = reps
             l_max_tracks_genres = l_gen
@@ -329,31 +325,34 @@ def generotiempo(cat, hora_1, hora_2):
     sorted_gen = sortReps(l_gen_reps, compareReps)
     top_genre = lt.getElement(sorted_gen, 0)
 
+    r = lt.newList(datastructure="ARRAY_LIST")
     m_h = cat["hashtags"]
     m_s = cat["sentiment"]
     for i in lt.iterator(l_max_tracks_genres):
         num_hashtags = 0
         sum_vader = 0
-        a = om.get(m_h, i["track_id"])
-        #a = om.get(m_h, i)
+        a = om.get(m_h, i)
         l_hashtags = me.getValue(a)
         for e in lt.iterator(l_hashtags):
-#            if e["created_at"] == i["created_at"]:
-#                if e["user_id"] == i["user_id"]:
-                    if mp.contains(m_s, e["hashtag"].lower()):
-                        b = mp.get(m_s, e["hashtag"].lower())
-                        vader = me.getValue(b)
-                        if vader != 100:
-                            num_hashtags+=1
-                            sum_vader+=vader
+            h = e["hashtag"].lower()
+            if (e["created_at"] >= hora_1) and (e["created_at"] <= hora_2):
+                if mp.contains(m_s, h):
+                    b = mp.get(m_s, h)
+                    vader = me.getValue(b)
+                    if vader != 100:
+                        num_hashtags+=1
+                        sum_vader+=vader
         if num_hashtags == 0:
             num_hashtags = 1
         vader_avg = sum_vader/num_hashtags
-        i["numero hashtags"] = num_hashtags
-        i["vader promedio"] = vader_avg
+        dic = {}
+        dic["track_id"] = i
+        dic["numero hashtags"] = num_hashtags
+        dic["vader promedio"] = vader_avg
+        lt.addLast(r, dic)
 
-    sorted_ht = sortReps(l_max_tracks_genres, compareTrackHashtags)
-    top_tracks = lt.subList(sorted_ht, 0, 10)
+    sorted_ht = sortReps(r, compareTrackHashtags)
+    top_tracks = lt.subList(sorted_ht, 1, 10)
 
     return (tot_reps, sorted_gen, unique_tracks, top_tracks)
 
@@ -366,14 +365,6 @@ def compareValue(val1, val2):
     else:
         return -1
 
-def compareRefValue(dic1, dic2):
-    if (dic1["ref"] == dic2["ref"]):
-        return 0
-    elif (dic1["ref"] > dic2["ref"]):
-        return 1
-    else:
-        return -1
-
 def compareTrackIds(dic1, dic2):
     if (dic1["track_id"] == dic2["track_id"]):
         return 0
@@ -382,14 +373,14 @@ def compareTrackIds(dic1, dic2):
     else:
         return -1
 
-def compareReps(genre1, genre2):
-     if genre1["reps"] > genre2["reps"]:
+def compareTrackHashtags(track1, track2):
+     if int(track1["numero hashtags"]) > int(track2["numero hashtags"]):
         return True
      else:
-        return False 
+        return False    
 
-def compareTrackHashtags(track1, track2):
-     if track1["numero hashtags"] > track2["numero hashtags"]:
+def compareReps(track1, track2):
+     if int(track1["reps"]) > int(track2["reps"]):
         return True
      else:
         return False    
