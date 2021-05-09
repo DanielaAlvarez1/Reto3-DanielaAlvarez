@@ -229,7 +229,7 @@ def caracterizarrep(cat, carac, minimo, maximo):
 
 def musica(cat, carac_1, carac_2, min_1, max_1, min_2, max_2):
     m = cat["features"]
-    m_reps = mp.newMap(11,
+    m_reps = mp.newMap(4000,
                         maptype='PROBING',
                         loadfactor=0.5)
     m_tracks = om.newMap(omaptype='RBT',
