@@ -240,7 +240,7 @@ def musica(cat, carac_1, carac_2, min_1, max_1, min_2, max_2):
     l_1 = om.values(m_1, min_1, max_1)
     for lists in lt.iterator(l_1):
         for e in lt.iterator(lists):
-            om.put(m_reps, e["track_id"], "")
+            mp.put(m_reps, e["track_id"], "")
     
     b = mp.get(m, carac_2)
     m_2 = me.getValue(b)
