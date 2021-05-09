@@ -229,8 +229,9 @@ def caracterizarrep(cat, carac, minimo, maximo):
 
 def musica(cat, carac_1, carac_2, min_1, max_1, min_2, max_2):
     m = cat["features"]
-    m_reps = om.newMap(omaptype='RBT',
-                            comparefunction=compareValue)
+    m_reps = mp.newMap(11,
+                        maptype='PROBING',
+                        loadfactor=0.5)
     m_tracks = om.newMap(omaptype='RBT',
                             comparefunction=compareValue)
 
@@ -246,7 +247,7 @@ def musica(cat, carac_1, carac_2, min_1, max_1, min_2, max_2):
     l_2 = om.values(m_2, min_2, max_2)
     for lists in lt.iterator(l_2):
         for e in lt.iterator(lists):
-            if om.contains(m_reps, e["track_id"]):
+            if mp.contains(m_reps, e["track_id"]):
                 om.put(m_tracks, e["track_id"], e)
 
     n_tracks = om.size(m_tracks)
