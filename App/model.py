@@ -49,9 +49,10 @@ def initCatalog():
     cat['features'] = mp.newMap(17,
                                    maptype='PROBING',
                                    loadfactor=0.5)
-    cat['hashtags'] = om.newMap(omaptype='RBT',
-                                    comparefunction=compareValue)
-    cat['sentiment'] = mp.newMap(11,
+    cat['hashtags'] = mp.newMap(90000,
+                                   maptype='PROBING',
+                                   loadfactor=0.5)
+    cat['sentiment'] = mp.newMap(7000,
                                    maptype='PROBING',
                                    loadfactor=0.5)
     cat["genres"] = mp.newMap(11,
@@ -162,7 +163,13 @@ def addHashtag(cat, rep):
     m = cat["hashtags"]
     date = datetime.datetime.strptime(rep["created_at"][11:], '%H:%M:%S')
     info = { "track_id": rep["track_id"], "created_at": date, "hashtag": rep["hashtag"]}
-    addMapKey(m, rep["track_id"], info)
+    if mp.contains(m, rep["track_id"]):
+        a = mp.get(m, rep["track_id"])
+        l_value = me.getValue(a)
+    else:
+        l_value = lt.newList(datastructure='ARRAY_LIST')
+    lt.addLast(l_value, info)
+    mp.put(m, rep["track_id"], l_value)
 
 def addSentiment(cat, sent):
     m = cat["sentiment"]
@@ -332,7 +339,7 @@ def generotiempo(cat, hora_1, hora_2):
     for i in lt.iterator(l_max_tracks_genres):
         num_hashtags = 0
         sum_vader = 0
-        a = om.get(m_h, i)
+        a = mp.get(m_h, i)
         l_hashtags = me.getValue(a)
         for e in lt.iterator(l_hashtags):
             h = e["hashtag"].lower()
