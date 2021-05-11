@@ -206,12 +206,14 @@ while True:
             print("TOP {0}: {1} con {2} reproducciones".format(top, i["nombre"], str(i["reps"])))
             top+=1
         print("\nEl genero top fue {0} con {1} reproducciones".format(top_gen["nombre"], str(top_gen["reps"])))
-        print("ANALISIS DE SENTIMIENTO PARA {0}".format(top_gen["nombre"].upper()))
+        print("="*10 + " ANALISIS DE SENTIMIENTO PARA {0} ".format(top_gen["nombre"].upper()) + "="*10 )
         print("{0} tiene {1} pistas únicas".format(top_gen["nombre"], str(unique_tracks)))
-        print("El TOP 10 tracks es:")
+        print("\nEl TOP 10 tracks es:")
         n = 1
         for i in lt.iterator(lista_tracks):
-            print("Top {0}: {1} con {2} hashtags y VADER = {3}".format(str(n), i["track_id"], str(i["numero hashtags"]), str(i["vader promedio"])))
+            a = i["vader promedio"]
+            val = f"{a:.2f}"
+            print("Top {0}: {1} con {2} hashtags y VADER = {3}".format(str(n), i["track_id"], str(i["numero hashtags"]), val))
             n+=1
         print("Tiempo [ms]: ", f"{answer[0]:.3f}", "  ||  ",
               "Memoria [kB]: ", f"{answer[1]:.3f}")
